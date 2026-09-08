@@ -13,8 +13,9 @@ ReactDOM.createRoot(
 
   <React.StrictMode>
 
-    <BrowserRouter basename="/my-business-website">
-
+    <BrowserRouter
+  basename={window.location.pathname.startsWith('/my-business-website') ? '/my-business-website' : '/'}
+>
       <SiteContentProvider>
 
         <App />
