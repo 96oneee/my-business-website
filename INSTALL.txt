@@ -1,0 +1,13 @@
+STABLE LAUNCH PASS
+
+This package is based on the working social-icons editor build.
+It removes customer-facing placeholder labels such as "YOUR IMAGE" from the public site while keeping clear "Add image/video" guidance inside the editor preview.
+
+Install:
+1. Back up the current project.
+2. Replace only the project's src folder with this package's src folder.
+3. Keep .env.local and package.json unchanged.
+4. Run: npm.cmd run dev
+5. Open: http://localhost:3000/my-business-website/admin
+
+Do not replace your Supabase environment variables.
