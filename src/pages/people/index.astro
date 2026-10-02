@@ -1,0 +1,104 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import PersonCard from '../../components/PersonCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getPeople, GROUPS, md } from '../../lib/site';
+
+const people = await getPeople();
+const pi = people.filter((p) => p.data.group === 'pi');
+const groups = GROUPS.filter((g) => g.key !== 'pi' && g.key !== 'alumni')
+  .map((g) => ({ ...g, members: people.filter((p) => p.data.group === g.key) }))
+  .filter((g) => g.members.length);
+const alumni = people.filter((p) => p.data.group === 'alumni');
+---
+<Base title="People" description="Meet the members of NO.KIT.LAB at the American University of Beirut.">
+  <PageHero eyebrow="People" title="Meet the team" intro="A growing, collaborative group of scientists working where genetics, cancer biology and biotechnology meet." />
+
+  {pi.map((p) => (
+    <section class="section pi-section">
+      <div class="container pi">
+        <a class="pi-photo" href={`/people/${p.id}`}>
+          {p.data.photo && <img src={p.data.photo} alt={`Portrait of ${p.data.name}`} />}
+        </a>
+        <div>
+          <p class="eyebrow">Principal Investigator</p>
+          <h2>{p.data.title ? `${p.data.title} ` : ''}{p.data.name}</h2>
+          <p class="pi-role">{p.data.position}</p>
+          <div class="divider"><span></span></div>
+          <div class="prose" set:html={md(p.body)} />
+          <div class="pi-actions">
+            <a class="btn btn--primary" href={`/people/${p.id}`}>Full profile <Icon name="arrow" /></a>
+            {p.data.emails[0] && <a class="btn btn--ghost" href={`mailto:${p.data.emails[0]}`}><Icon name="mail" /> Email</a>}
+          </div>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  {groups.map((g, i) => (
+    <section class:list={['section', 'group', { 'section--tint': i % 2 === 0 }]}>
+      <div class="container">
+        <div class="section-head">
+          <h2>{g.label}</h2>
+          <div class="divider"><span></span></div>
+        </div>
+        <div class="grid grid--4">{g.members.map((p) => <PersonCard person={p} />)}</div>
+      </div>
+    </section>
+  ))}
+
+  {alumni.length > 0 && (
+    <section class="section group">
+      <div class="container">
+        <div class="section-head">
+          <h2>Alumni</h2>
+          <div class="divider"><span></span></div>
+        </div>
+        <ul class="alumni">
+          {alumni.map((p) => (
+            <li>
+              <a href={`/people/${p.id}`} class="card al">
+                {p.data.photo ? <img src={p.data.photo} alt="" loading="lazy" /> : <span class="al-mono">{p.data.name[0]}</span>}
+                <span>
+                  <strong>{p.data.name}</strong>
+                  <span class="muted">{p.data.position}</span>
+                  {p.data.now_at && <span class="now">Now: {p.data.now_at}</span>}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <section class="section section--navy join">
+    <div class="container join-inner">
+      <div>
+        <h2>Interested in joining?</h2>
+        <p>We are always happy to hear from motivated students, research assistants and collaborators. Tell us about your interests and experience.</p>
+      </div>
+      <a class="btn btn--light" href="/contact">Contact us <Icon name="arrow" /></a>
+    </div>
+  </section>
+</Base>
+<style>
+  .pi { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 64px; align-items: start; }
+  .pi-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 15%; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .pi h2 { margin-bottom: 4px; }
+  .pi-role { color: var(--teal); font-weight: 500; margin-bottom: 4px; }
+  .pi-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .group .section-head { margin-bottom: 36px; }
+  .alumni { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 18px; }
+  .al { display: flex !important; gap: 16px; align-items: center; padding: 14px 18px; }
+  .al img, .al-mono { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center 20%; flex: none; }
+  .al-mono { background: var(--teal-light); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); color: var(--navy); font-size: 1.4rem; }
+  .al > span { display: flex; flex-direction: column; line-height: 1.4; }
+  .al strong { font-family: var(--font-head); color: var(--navy); font-weight: 500; font-size: 1.05rem; }
+  .al .muted { font-size: 0.88rem; }
+  .now { font-size: 0.85rem; color: var(--teal); }
+  .join-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .join p { max-width: 56ch; margin: 0; }
+  @media (max-width: 860px) { .pi { grid-template-columns: 1fr; gap: 36px; } .pi-photo { max-width: 360px; } }
+</style>

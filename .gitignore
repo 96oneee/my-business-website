@@ -1,10 +1,7 @@
 node_modules/
 dist/
-.vscode/
-.idea/
-*.log
-.DS_Store
+.astro/
+.netlify/
 .env
-.env.local.vs/
-.env.local
-.vs/
+.env.*
+.DS_Store

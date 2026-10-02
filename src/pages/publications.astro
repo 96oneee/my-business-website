@@ -1,0 +1,120 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import PubItem from '../components/PubItem.astro';
+import Icon from '../components/Icon.astro';
+import { getSettings } from '../lib/site';
+import { getPublications } from '../lib/publications';
+
+const s = await getSettings();
+const { items } = await getPublications();
+const featured = items.filter((p) => p.featured);
+const years = [...new Set(items.map((p) => p.year))].sort((a, b) => b - a);
+const byYear = years.map((y) => ({ year: y, pubs: items.filter((p) => p.year === y) }));
+const updated = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Base title="Publications" description="Peer-reviewed publications from NO.KIT.LAB and Prof. Athar Khalil.">
+  <PageHero eyebrow="Publications" title="Publications" intro="Peer-reviewed work from the lab and its principal investigator. This list updates automatically from PubMed.">
+    <div class="btn-row" style="margin-top:28px">
+      <a class="btn btn--ghost" href={s.pubmed_link} target="_blank" rel="noopener">View all on PubMed <Icon name="external" /></a>
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      {items.length === 0 ? (
+        <div class="empty card">
+          <Icon name="book" size={36} />
+          <h2>See our papers on PubMed</h2>
+          <p class="muted">The publication list could not be loaded right now. The complete, up-to-date list is always available on PubMed.</p>
+          <a class="btn btn--primary" href={s.pubmed_link} target="_blank" rel="noopener">Open PubMed <Icon name="external" /></a>
+        </div>
+      ) : (
+        <>
+          {featured.length > 0 && (
+            <div class="featured">
+              <h2>Featured</h2>
+              <div class="divider"><span></span></div>
+              {featured.map((p) => <PubItem pub={p} />)}
+            </div>
+          )}
+          <div class="tools">
+            <label class="search">
+              <Icon name="search" size={18} />
+              <span class="visually-hidden">Search publications</span>
+              <input id="pub-search" type="search" placeholder="Search title, author or journal" />
+            </label>
+            <div class="years" role="group" aria-label="Filter by year">
+              <button class="yr active" data-year="all">All</button>
+              {years.map((y) => <button class="yr" data-year={y}>{y || 'Other'}</button>)}
+            </div>
+          </div>
+          <p class="count muted"><span id="pub-count">{items.length}</span> publications · updated {updated}</p>
+          <div id="pub-list">
+            {byYear.map((g) => (
+              <section class="year-group" data-year={g.year}>
+                <h2 class="year-head">{g.year || 'Other'}</h2>
+                {g.pubs.map((p) => (
+                  <div class="pub-wrap" data-text={`${p.title} ${p.authors.join(' ')} ${p.journal}`.toLowerCase()}>
+                    <PubItem pub={p} showYear={false} />
+                  </div>
+                ))}
+              </section>
+            ))}
+          </div>
+          <p id="no-results" class="muted" hidden>No publications match your search.</p>
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#pub-search');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.yr');
+  const groups = document.querySelectorAll<HTMLElement>('.year-group');
+  const count = document.querySelector('#pub-count');
+  const none = document.querySelector<HTMLElement>('#no-results');
+  let year = 'all';
+  function apply() {
+    const q = (input?.value || '').trim().toLowerCase();
+    let shown = 0;
+    groups.forEach((g) => {
+      let inGroup = 0;
+      const yearOk = year === 'all' || g.dataset.year === year;
+      g.querySelectorAll<HTMLElement>('.pub-wrap').forEach((el) => {
+        const ok = yearOk && (!q || (el.dataset.text || '').includes(q));
+        el.hidden = !ok;
+        if (ok) inGroup++;
+      });
+      g.hidden = inGroup === 0;
+      shown += inGroup;
+    });
+    if (count) count.textContent = String(shown);
+    if (none) none.hidden = shown > 0;
+  }
+  input?.addEventListener('input', apply);
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      buttons.forEach((x) => x.classList.toggle('active', x === b));
+      year = b.dataset.year || 'all';
+      apply();
+    }),
+  );
+</script>
+
+<style>
+  .tools { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 14px; }
+  .search { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; min-width: min(380px, 100%); color: var(--slate); background: #fff; }
+  .search:focus-within { border-color: var(--teal); }
+  .search input { border: 0; outline: 0; font: inherit; font-size: 0.95rem; width: 100%; color: var(--ink); background: transparent; }
+  .years { display: flex; gap: 6px; flex-wrap: wrap; }
+  .yr { font: inherit; font-size: 0.88rem; font-weight: 500; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--navy); cursor: pointer; }
+  .yr:hover { border-color: var(--teal); }
+  .yr.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .count { font-size: 0.88rem; margin-bottom: 24px; }
+  .year-head { font-size: 1.5rem; margin: 40px 0 0; padding-bottom: 12px; border-bottom: 2px solid var(--navy); }
+  .featured { margin-bottom: 56px; }
+  .empty { padding: 48px; text-align: center; max-width: 640px; margin: 0 auto; color: var(--teal); }
+  .empty h2 { margin-top: 12px; }
+</style>

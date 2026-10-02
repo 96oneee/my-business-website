@@ -1,0 +1,5 @@
+---
+interface Props { center?: boolean; light?: boolean }
+const { center = false } = Astro.props;
+---
+<div class:list={['divider', { center }]} aria-hidden="true"><span></span></div>

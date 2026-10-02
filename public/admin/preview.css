@@ -1,0 +1,4 @@
+body { font-family: Inter, system-ui, sans-serif; color: #1f2433; line-height: 1.65; padding: 24px; }
+h1, h2, h3 { font-family: Jost, sans-serif; color: #1b2353; font-weight: 500; }
+a { color: #1e8c84; }
+img { max-width: 100%; border-radius: 10px; }

@@ -1,0 +1,234 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Divider from '../components/Divider.astro';
+import Helix from '../components/Helix.astro';
+import PubItem from '../components/PubItem.astro';
+import { getSettings, getResearch, getPeople, getNews, formatDate, initials } from '../lib/site';
+import { getPublications } from '../lib/publications';
+
+const s = await getSettings();
+const research = await getResearch();
+const team = (await getPeople()).filter((p) => p.data.group !== 'alumni');
+const news = (await getNews()).slice(0, 3);
+const { items: pubs } = await getPublications();
+const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.featured)].slice(0, 3);
+---
+<Base>
+  <section class="hero">
+    <Helix class="hero-helix" />
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{s.eyebrow}</p>
+        <h1>{s.hero_headline}</h1>
+        <Divider />
+        <p class="lead">{s.hero_description}</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href={s.primary_button.link}>{s.primary_button.label} <Icon name="arrow" /></a>
+          <a class="btn btn--ghost" href={s.secondary_button.link}>{s.secondary_button.label}</a>
+        </div>
+      </div>
+      <div class="hero-mark">
+        <div class="mark-ring">
+          <img src="/images/logo-mark.png" alt={`${s.lab_name} logo: DNA, CRISPR scissors, a cell and a mouse`} width="400" height="386" />
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <ul class="aff-band">
+        {s.affiliations.map((a) => <li>{a.name}</li>)}
+        <li>Est. 2025</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">What we study</p>
+          <h2>Research themes</h2>
+          <Divider />
+        </div>
+        <a class="text-link" href="/research">All research <Icon name="arrow" /></a>
+      </div>
+      <div class="grid grid--3">
+        {research.map((r, i) => (
+          <a class="card theme" href={`/research#${r.id}`}>
+            <span class="num">0{i + 1}</span>
+            <span class="theme-icon"><Icon name={r.data.icon} size={28} /></span>
+            <h3>{r.data.title}</h3>
+            <p class="q">{r.data.question}</p>
+            <p class="muted small">{r.data.summary}</p>
+            <span class="text-link">Read more <Icon name="arrow" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container approach">
+      <div>
+        <p class="eyebrow">Our approach</p>
+        <h2>From a genomic clue to a biological story</h2>
+        <Divider />
+        <p class="lead">We move beyond identifying genes and variants to experimentally uncovering what they do, combining CRISPR genome editing, in vivo models, molecular biology and genomics.</p>
+        <a class="text-link" href="/about">About the lab <Icon name="arrow" /></a>
+      </div>
+      <ul class="methods">
+        <li><Icon name="scissors" /><div><h3>CRISPR/Cas9 genome editing</h3><p>Functional and multiplexed screens to find the genes that matter.</p></div></li>
+        <li><Icon name="cell" /><div><h3>Molecular &amp; cellular biology</h3><p>Assays that turn variants into mechanisms.</p></div></li>
+        <li><Icon name="dna" /><div><h3>Genomics &amp; transcriptomics</h3><p>Patient data and sequencing to guide the questions we ask.</p></div></li>
+        <li><Icon name="microscope" /><div><h3>In vivo disease models</h3><p>Following tumors and disease in a living system.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--navy team-band">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow light">The people</p>
+          <h2>Meet the team</h2>
+          <div class="divider light-div"><span></span></div>
+        </div>
+        <a class="btn btn--light" href="/people">All members <Icon name="arrow" /></a>
+      </div>
+      <ul class="faces">
+        {team.map((p) => (
+          <li>
+            <a href={`/people/${p.id}`}>
+              <span class="face">{p.data.photo ? <img src={p.data.photo} alt="" loading="lazy" /> : <span>{initials(p.data.name)}</span>}</span>
+              <span class="fname">{p.data.name}</span>
+              <span class="frole">{p.data.position.split('·')[0]}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--row">
+        <div>
+          <p class="eyebrow">Recent work</p>
+          <h2>Latest publications</h2>
+          <Divider />
+        </div>
+        <a class="text-link" href="/publications">All publications <Icon name="arrow" /></a>
+      </div>
+      {latest.length > 0 ? (
+        <div class="pubs">{latest.map((p) => <PubItem pub={p} maxAuthors={8} />)}</div>
+      ) : (
+        <p class="muted">Our publications are listed on <a href={s.pubmed_link} target="_blank" rel="noopener">PubMed</a>.</p>
+      )}
+    </div>
+  </section>
+
+  {news.length > 0 && (
+    <section class="section section--tint">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <p class="eyebrow">News</p>
+            <h2>What's new in the lab</h2>
+            <Divider />
+          </div>
+          <a class="text-link" href="/news">All news <Icon name="arrow" /></a>
+        </div>
+        <div class="grid grid--3">
+          {news.map((n) => (
+            <a class="card news" href={`/news/${n.id}`}>
+              {n.data.image && <img src={n.data.image} alt="" loading="lazy" />}
+              <div class="news-body">
+                <p class="date">{formatDate(n.data.date)}</p>
+                <h3>{n.data.title}</h3>
+                <p class="muted small">{n.data.summary}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="cta">
+    <div class="container cta-inner">
+      <div>
+        <h2>Interested in working with us?</h2>
+        <p class="muted">We welcome motivated students and collaborators who want to turn genomic questions into experiments.</p>
+      </div>
+      <a class="btn btn--primary" href="/contact">Get in touch <Icon name="arrow" /></a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { position: relative; overflow: hidden; padding: clamp(56px, 8vw, 104px) 0 40px; background: radial-gradient(1200px 500px at 85% 30%, var(--teal-light), transparent 60%), #fff; }
+  .hero :global(.hero-helix) { position: absolute; left: -120px; bottom: -160px; width: 420px; opacity: 0.55; pointer-events: none; }
+  .hero-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px; align-items: center; position: relative; }
+  .hero h1 { font-size: clamp(2.5rem, 5.4vw, 4.2rem); line-height: 1.08; max-width: 14ch; }
+  .hero .lead { font-size: 1.12rem; margin-bottom: 34px; }
+  .hero-mark { display: flex; justify-content: center; align-items: center; }
+  .mark-ring {
+    width: min(440px, 90%); aspect-ratio: 1; border-radius: 50%;
+    background: #fff; box-shadow: 0 30px 80px rgba(27, 35, 83, 0.12), inset 0 0 0 1px var(--line);
+    display: grid; place-items: center; padding: 11%; overflow: hidden;
+  }
+  .mark-ring img { width: 100%; height: auto; }
+  .aff-band { display: flex; flex-wrap: wrap; gap: 10px 36px; list-style: none; padding: 26px 0 0; margin: 64px 0 0; border-top: 1px solid var(--line); color: var(--slate); font-family: var(--font-head); letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.8rem; }
+  .aff-band li { display: flex; align-items: center; gap: 12px; }
+  .aff-band li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+
+  .theme { padding: 32px 30px 30px; position: relative; display: flex !important; flex-direction: column; }
+  .num { position: absolute; top: 26px; right: 28px; font-family: var(--font-head); color: var(--line); font-size: 2.4rem; font-weight: 500; line-height: 1; }
+  .theme-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--teal-light); color: var(--teal); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; }
+  .theme h3 { font-size: 1.3rem; }
+  .q { font-family: var(--font-head); color: var(--navy); font-size: 1.04rem; line-height: 1.45; border-left: 2px solid var(--teal); padding-left: 14px; }
+  .small { font-size: 0.93rem; }
+  .theme .text-link { margin-top: auto; padding-top: 8px; }
+
+  .approach { display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
+  .approach .lead { margin-bottom: 26px; }
+  .methods { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .methods li { display: flex; gap: 16px; padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+  .methods li > :global(svg) { color: var(--teal); flex: none; width: 28px; height: 28px; margin-top: 2px; }
+  .methods h3 { font-size: 1.05rem; margin-bottom: 6px; }
+  .methods p { margin: 0; color: var(--slate); font-size: 0.92rem; }
+
+  .team-band .eyebrow { color: #8fd3cc; }
+  .light-div::before { background: #fff !important; }
+  .faces { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 36px 20px; }
+  .faces li { width: 160px; }
+  .faces a { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: #fff; }
+  .face { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; border: 3px solid rgba(255, 255, 255, 0.15); transition: border-color 0.25s, transform 0.25s; background: var(--navy-2); display: flex; align-items: center; justify-content: center; }
+  .face img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+  .face span { font-family: var(--font-head); font-size: 2rem; color: #8fd3cc; letter-spacing: 0.06em; }
+  .faces a:hover .face { border-color: var(--teal); transform: translateY(-3px); }
+  .fname { margin-top: 14px; font-family: var(--font-head); font-weight: 500; font-size: 1.02rem; }
+  .frole { font-size: 0.83rem; color: #aab1cc; }
+
+  .pubs { border-top: 1px solid var(--line); }
+
+  .news { overflow: hidden; }
+  .news img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .news-body { padding: 22px 24px 26px; }
+  .date { color: var(--teal); font-size: 0.85rem; font-weight: 500; margin: 0 0 6px; }
+
+  .cta { padding: 0 0 clamp(64px, 9vw, 112px); }
+  .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; padding-top: 56px; border-top: 1px solid var(--line); }
+  .cta h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+  .cta p { margin: 0; max-width: 52ch; }
+
+  @media (max-width: 920px) {
+    .hero-grid, .approach { grid-template-columns: 1fr; gap: 40px; }
+    .hero-mark { order: -1; }
+    .mark-ring { width: 220px; }
+  }
+  @media (max-width: 560px) {
+    .methods { grid-template-columns: 1fr; }
+    .face { width: 104px; height: 104px; }
+  }
+</style>

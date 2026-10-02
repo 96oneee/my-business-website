@@ -1,0 +1,52 @@
+---
+import type { Publication } from '../lib/publications';
+import { isLabAuthor } from '../lib/publications';
+import Icon from './Icon.astro';
+interface Props { pub: Publication; maxAuthors?: number; showYear?: boolean }
+const { pub, maxAuthors = 12, showYear = true } = Astro.props;
+let authors = pub.authors;
+let more = 0;
+if (authors.length > maxAuthors) {
+  // Always keep the lab's author visible when truncating.
+  const idx = authors.findIndex(isLabAuthor);
+  const head = authors.slice(0, maxAuthors - 1);
+  if (idx >= maxAuthors - 1) head.push('…', authors[idx]);
+  more = authors.length - head.filter((a) => a !== '…').length;
+  authors = head;
+}
+---
+<article class:list={['pub', { 'no-year': !showYear }]}>
+  {showYear && <div class="year">{pub.year || ''}</div>}
+  <div>
+    <h3>
+      {pub.url ? <a href={pub.url} target="_blank" rel="noopener">{pub.title}</a> : pub.title}
+      {pub.featured && <span class="chip">Featured</span>}
+    </h3>
+    <p class="authors">
+      {authors.map((a, i) => (
+        <>{isLabAuthor(a) ? <strong>{a}</strong> : a}{i < authors.length - 1 ? ', ' : ''}</>
+      ))}
+      {more > 0 && <span class="muted">, et al.</span>}
+    </p>
+    <p class="meta">
+      <em>{pub.journal}</em>
+      {pub.pmid && <> · PMID {pub.pmid}</>}
+      {pub.doi && <> · <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener">DOI <Icon name="external" size={13} /></a></>}
+      {pub.note && <> · {pub.note}</>}
+    </p>
+  </div>
+</article>
+<style>
+  .pub { display: grid; grid-template-columns: 64px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .no-year { grid-template-columns: 1fr; }
+  .year { font-family: var(--font-head); color: var(--teal); font-weight: 500; padding-top: 2px; }
+  h3 { font-family: var(--font-body); font-size: 1.05rem; font-weight: 600; line-height: 1.45; margin: 0 0 6px; }
+  h3 a { color: var(--navy); text-decoration: none; }
+  h3 a:hover { color: var(--teal); text-decoration: underline; }
+  h3 .chip { margin-left: 8px; vertical-align: 2px; }
+  .authors { font-size: 0.92rem; color: var(--slate); margin: 0 0 4px; }
+  .authors strong { color: var(--navy); }
+  .meta { font-size: 0.88rem; color: var(--slate); margin: 0; }
+  .meta a { display: inline-flex; align-items: center; gap: 3px; }
+  @media (max-width: 560px) { .pub { grid-template-columns: 1fr; gap: 4px; } }
+</style>

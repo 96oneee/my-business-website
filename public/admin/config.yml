@@ -1,0 +1,236 @@
+# Decap CMS configuration for the NO.KIT.LAB website.
+# Every save commits to the repository and Netlify rebuilds the site (about a minute).
+backend:
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: 'Add {{collection}} "{{slug}}"'
+    update: 'Update {{collection}} "{{slug}}"'
+    delete: 'Delete {{collection}} "{{slug}}"'
+    uploadMedia: 'Upload "{{path}}"'
+    deleteMedia: 'Delete "{{path}}"'
+
+# Lets you try the admin locally: run `npx decap-server` and `npm run dev`, then open /admin.
+local_backend: true
+
+site_url: /
+display_url: /
+logo_url: /images/logo-full.png
+locale: en
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  # ---------------------------------------------------------------- Settings
+  - name: settings
+    label: Site settings
+    description: Lab name, home page text, buttons and contact details.
+    editor: { preview: false }
+    files:
+      - name: site
+        label: Home page & contact details
+        file: src/content/settings/site.yml
+        fields:
+          - { name: lab_name, label: Lab name, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: eyebrow, label: Small text above the headline, widget: string, required: false }
+          - { name: hero_headline, label: Home headline, widget: string }
+          - { name: hero_description, label: Home description, widget: text }
+          - name: primary_button
+            label: Main button
+            widget: object
+            fields:
+              - { name: label, label: Text, widget: string }
+              - { name: link, label: Link (e.g. /research), widget: string }
+          - name: secondary_button
+            label: Second button
+            widget: object
+            fields:
+              - { name: label, label: Text, widget: string }
+              - { name: link, label: Link (e.g. /people), widget: string }
+          - name: affiliations
+            label: Affiliations
+            widget: list
+            summary: '{{fields.name}}'
+            fields:
+              - { name: name, label: Name, widget: string }
+              - { name: url, label: Website, widget: string, required: false }
+          - { name: emails, label: Contact emails, widget: list, field: { name: email, label: Email, widget: string } }
+          - { name: phone, label: Phone, widget: string, required: false }
+          - { name: address, label: Address (one line per row), widget: text, required: false }
+          - { name: instagram, label: Instagram handle (without @), widget: string, required: false }
+          - { name: map_embed_url, label: Map embed URL, widget: string, required: false, hint: 'From openstreetmap.org → Share → HTML, copy the src="…" address.' }
+          - { name: map_link, label: '"Open in maps" link', widget: string, required: false }
+          - { name: footer_text, label: Footer text, widget: string, required: false }
+          - { name: pubmed_link, label: '"View all on PubMed" link', widget: string }
+          - name: pubmed_query
+            label: PubMed search used to load publications
+            widget: string
+            hint: Advanced. Publications are loaded automatically with this PubMed search every time the site rebuilds.
+
+  # ------------------------------------------------------------------- Pages
+  - name: pages
+    label: Pages
+    description: Text of the About page and the Research page introduction.
+    files:
+      - name: about
+        label: About page
+        file: src/content/pages/about.md
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: intro, label: Introduction, widget: text, required: false }
+          - { name: image, label: Lab photo (optional), widget: image, required: false }
+          - name: sections
+            label: Sections
+            widget: list
+            summary: '{{fields.heading}}'
+            fields:
+              - { name: heading, label: Heading, widget: string }
+              - { name: text, label: Text, widget: markdown, buttons: [bold, italic, link, bulleted-list], editor_components: [] }
+      - name: research-intro
+        label: Research page introduction
+        file: src/content/pages/research-intro.md
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: intro, label: Introduction, widget: text }
+
+  # ---------------------------------------------------------------- Research
+  - name: research
+    label: Research themes
+    label_singular: Research theme
+    folder: src/content/research
+    create: true
+    slug: '{{slug}}'
+    summary: '{{order}}. {{title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: order, label: Order on the page, widget: number, value_type: int, default: 9 }
+      - { name: question, label: Lead question (shown as a quote), widget: text, required: false }
+      - { name: summary, label: Short summary (home page card), widget: text }
+      - name: icon
+        label: Icon
+        widget: select
+        default: dna
+        options:
+          - { label: DNA, value: dna }
+          - { label: Lungs, value: lungs }
+          - { label: Microscope, value: microscope }
+          - { label: Cell, value: cell }
+          - { label: CRISPR scissors, value: scissors }
+      - { name: image, label: Image (optional), widget: image, required: false }
+      - { name: active, label: Show on the website, widget: boolean, default: true }
+      - { name: body, label: Description, widget: markdown }
+
+  # ------------------------------------------------------------------ People
+  - name: people
+    label: People
+    label_singular: Person
+    description: Lab members and alumni. To move someone to alumni, change their Group.
+    folder: src/content/people
+    create: true
+    slug: '{{slug}}'
+    identifier_field: name
+    summary: '{{name}} · {{position}}'
+    sortable_fields: [name, group, order]
+    view_groups:
+      - { label: Group, field: group }
+    fields:
+      - { name: name, label: Full name, widget: string }
+      - { name: title, label: 'Title before the name (e.g. Prof., Dr.)', widget: string, required: false }
+      - name: group
+        label: Group
+        widget: select
+        options:
+          - { label: Principal Investigator, value: pi }
+          - { label: Lab Manager, value: manager }
+          - { label: Postdoctoral Fellow, value: postdoc }
+          - { label: Research Assistant, value: ra }
+          - { label: Graduate Student, value: grad }
+          - { label: Intern, value: intern }
+          - { label: Undergraduate Student, value: undergrad }
+          - { label: Alumni, value: alumni }
+      - { name: position, label: Position, widget: string }
+      - { name: order, label: Order within the group, widget: number, value_type: int, default: 9 }
+      - { name: photo, label: Photo (portrait works best), widget: image, required: false }
+      - { name: summary, label: Short summary (shown on the card), widget: text }
+      - { name: body, label: Background, widget: markdown }
+      - { name: description, label: About / personality, widget: markdown, required: false, buttons: [bold, italic, link], editor_components: [] }
+      - { name: hobbies, label: Outside the lab, widget: string, required: false }
+      - { name: fun_fact, label: Fun fact, widget: text, required: false }
+      - { name: emails, label: Emails, widget: list, required: false, field: { name: email, label: Email, widget: string } }
+      - name: links
+        label: Links (Google Scholar, ORCID, LinkedIn, CV…)
+        widget: list
+        required: false
+        summary: '{{fields.label}}'
+        fields:
+          - { name: label, label: Label, widget: string }
+          - { name: url, label: URL, widget: string }
+      - name: affiliations
+        label: Affiliations (mostly for the PI)
+        widget: list
+        required: false
+        summary: '{{fields.title}}'
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: lines, label: Lines, widget: list, field: { name: line, label: Line, widget: string } }
+      - { name: start_year, label: Joined (year), widget: string, required: false }
+      - { name: end_year, label: Left (year, alumni), widget: string, required: false }
+      - { name: now_at, label: 'Now at (alumni)', widget: string, required: false }
+      - { name: visible, label: Show on the website, widget: boolean, default: true }
+
+  # -------------------------------------------------------------------- News
+  - name: news
+    label: News
+    label_singular: News post
+    folder: src/content/news
+    create: true
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    summary: '{{date | date("YYYY-MM-DD")}} · {{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: Date, widget: datetime, date_format: 'DD MMM YYYY', time_format: false, format: 'YYYY-MM-DD' }
+      - { name: image, label: Cover image, widget: image, required: false }
+      - { name: summary, label: Short summary, widget: text }
+      - { name: tags, label: Tags, widget: list, required: false, hint: 'e.g. Paper, Award, Conference, New member' }
+      - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
+      - { name: body, label: Text, widget: markdown }
+
+  # ------------------------------------------------------------ Publications
+  - name: publications
+    label: Publications
+    description: Papers load automatically from PubMed. Use this to hide a wrong match, feature a paper, or add one that is not on PubMed.
+    editor: { preview: false }
+    files:
+      - name: overrides
+        label: Publication adjustments
+        file: src/content/publications/overrides.yml
+        fields:
+          - name: hidden_pmids
+            label: Hide these papers (PMIDs)
+            widget: list
+            required: false
+            hint: The PMID is the number in the PubMed address, e.g. pubmed.ncbi.nlm.nih.gov/12345678
+            field: { name: pmid, label: PMID, widget: string }
+          - name: featured_pmids
+            label: Feature these papers (PMIDs)
+            widget: list
+            required: false
+            field: { name: pmid, label: PMID, widget: string }
+          - name: extra
+            label: Papers not on PubMed (preprints, chapters…)
+            widget: list
+            required: false
+            summary: '{{fields.year}} · {{fields.title}}'
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: authors, label: 'Authors (comma separated, e.g. Khalil A, Trad H)', widget: string }
+              - { name: journal, label: Journal / venue, widget: string }
+              - { name: year, label: Year, widget: number, value_type: int }
+              - { name: doi, label: DOI, widget: string, required: false }
+              - { name: url, label: Link, widget: string, required: false }
+              - { name: note, label: Note (e.g. Preprint), widget: string, required: false }
+              - { name: featured, label: Featured, widget: boolean, default: false }

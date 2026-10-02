@@ -1,0 +1,100 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { getPeople, GROUPS, md, initials } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const people = await getPeople();
+  return people.map((person) => ({ params: { slug: person.id }, props: { person } }));
+}
+const { person } = Astro.props;
+const p = person.data;
+const { Content } = await render(person);
+const groupLabel = GROUPS.find((g) => g.key === p.group)?.label ?? '';
+const display = `${p.title ? p.title + ' ' : ''}${p.name}`;
+---
+<Base title={p.name} description={p.summary || `${p.name}, ${p.position} at NO.KIT.LAB`} image={p.photo || undefined}>
+  <section class="profile-hero">
+    <div class="container">
+      <a class="back" href="/people"><Icon name="arrow-left" size={18} /> All people</a>
+    </div>
+    <div class="container profile">
+      <aside class="side">
+        <div class="photo">
+          {p.photo ? <img src={p.photo} alt={`Portrait of ${p.name}`} /> : <span class="mono">{initials(p.name)}</span>}
+        </div>
+        {(p.emails.length > 0 || p.links.length > 0) && (
+          <div class="card contact-card">
+            {p.emails.map((e) => <a href={`mailto:${e}`}><Icon name="mail" size={18} />{e}</a>)}
+            {p.links.map((l) => <a href={l.url} target="_blank" rel="noopener"><Icon name="link" size={18} />{l.label}</a>)}
+          </div>
+        )}
+      </aside>
+      <div class="main">
+        <p class="eyebrow">{groupLabel}</p>
+        <h1>{display}</h1>
+        <p class="role">{p.position}</p>
+        <div class="divider"><span></span></div>
+
+        <h2 class="sub">Background</h2>
+        <div class="prose"><Content /></div>
+
+        {p.description && (<><h2 class="sub">About</h2><div class="prose" set:html={md(p.description)} /></>)}
+        {p.hobbies && (<><h2 class="sub">Outside the lab</h2><p class="prose">{p.hobbies}</p></>)}
+
+        {p.fun_fact && (
+          <aside class="fun">
+            <span class="fun-label"><Icon name="sparkle" size={18} /> Fun fact</span>
+            <p>{p.fun_fact}</p>
+          </aside>
+        )}
+
+        {p.affiliations.length > 0 && (
+          <>
+            <h2 class="sub">Affiliations</h2>
+            <div class="affs">
+              {p.affiliations.map((a) => (
+                <div class="card aff">
+                  <h3>{a.title}</h3>
+                  {a.lines.map((l) => <p>{l}</p>)}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        {p.now_at && <p class="now"><strong>Now:</strong> {p.now_at}</p>}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .profile-hero { padding: 40px 0 clamp(64px, 9vw, 112px); background: linear-gradient(180deg, var(--paper-2) 0, #fff 360px); }
+  .back { display: inline-flex; align-items: center; gap: 6px; color: var(--slate); text-decoration: none; font-size: 0.92rem; margin-bottom: 36px; }
+  .back:hover { color: var(--teal); }
+  .profile { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 64px; align-items: start; }
+  .side { position: sticky; top: 100px; display: grid; gap: 18px; }
+  .photo { aspect-ratio: 4 / 5; border-radius: var(--radius); overflow: hidden; background: linear-gradient(160deg, var(--teal-light), #eef0f7); box-shadow: var(--shadow); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; }
+  .mono { display: flex; height: 100%; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 4.5rem; color: var(--navy); opacity: 0.7; letter-spacing: 0.08em; }
+  .contact-card { padding: 18px 20px; display: grid; gap: 10px; }
+  .contact-card a { display: flex; gap: 10px; align-items: center; font-size: 0.92rem; text-decoration: none; word-break: break-all; color: var(--navy); }
+  .contact-card a:hover { color: var(--teal); }
+  .contact-card :global(svg) { color: var(--teal); flex: none; }
+  .main h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 6px; }
+  .role { color: var(--teal); font-weight: 500; font-size: 1.08rem; margin-bottom: 4px; }
+  .sub { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--slate); margin: 36px 0 12px; font-weight: 500; }
+  .prose { font-size: 1.05rem; }
+  .fun { margin: 36px 0 0; padding: 22px 26px; border-radius: var(--radius); background: var(--teal-light); border-left: 3px solid var(--teal); max-width: 44rem; }
+  .fun-label { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-weight: 500; color: var(--teal-dark); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.82rem; }
+  .fun p { margin: 8px 0 0; color: var(--navy); font-size: 1.05rem; }
+  .affs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 18px; max-width: 48rem; }
+  .aff { padding: 22px 24px; }
+  .aff h3 { font-size: 1.08rem; margin-bottom: 10px; }
+  .aff p { margin: 0; font-size: 0.92rem; color: var(--slate); }
+  .now { margin-top: 28px; }
+  @media (max-width: 900px) {
+    .profile { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .side { position: static; max-width: 340px; }
+  }
+</style>

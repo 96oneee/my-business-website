@@ -1,0 +1,5 @@
+# Publications are loaded automatically from PubMed at every build.
+# Use the admin page to hide a wrong match, feature a paper, or add one that is not on PubMed.
+hidden_pmids: []
+featured_pmids: []
+extra: []

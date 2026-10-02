@@ -1,0 +1,23 @@
+# Rebuilds the site every Monday so new PubMed papers appear automatically.
+# Setup: in Netlify, Site configuration → Build & deploy → Build hooks → Add build hook,
+# then save its URL as the repository secret NETLIFY_BUILD_HOOK (GitHub → Settings → Secrets → Actions).
+name: Weekly rebuild
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify build
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "NETLIFY_BUILD_HOOK secret is not set; skipping."
+            exit 0
+          fi
+          curl -fsS -X POST -d '{}' "$HOOK"

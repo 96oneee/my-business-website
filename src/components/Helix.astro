@@ -1,0 +1,16 @@
+---
+// Faint line-art double helix used as a background accent.
+interface Props { class?: string }
+const { class: cls } = Astro.props;
+const steps = Array.from({ length: 13 }, (_, i) => i);
+---
+<svg class={cls} viewBox="0 0 400 520" fill="none" aria-hidden="true">
+  <path d="M120 0 C 280 130, 120 260, 280 390 S 120 520, 120 520" stroke="#1b2353" stroke-opacity=".14" stroke-width="2.5"/>
+  <path d="M280 0 C 120 130, 280 260, 120 390 S 280 520, 280 520" stroke="#1e8c84" stroke-opacity=".22" stroke-width="2.5"/>
+  {steps.map((i) => {
+    const y = 20 + i * 38;
+    const t = Math.sin((y / 520) * Math.PI * 2.0 + Math.PI / 2);
+    const w = Math.abs(t) * 70 + 8;
+    return <line x1={200 - w} x2={200 + w} y1={y} y2={y} stroke={i % 2 ? '#1e8c84' : '#1b2353'} stroke-opacity=".14" stroke-width="2" stroke-linecap="round" />;
+  })}
+</svg>

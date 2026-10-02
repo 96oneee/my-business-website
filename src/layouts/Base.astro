@@ -1,0 +1,183 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Wordmark from '../components/Wordmark.astro';
+import { getSettings, getNews } from '../lib/site';
+
+interface Props { title?: string; description?: string; image?: string }
+const settings = await getSettings();
+const { title, description = settings.hero_description, image = '/images/logo-full.png' } = Astro.props;
+const fullTitle = title ? `${title} · ${settings.lab_name}` : `${settings.lab_name} · ${settings.tagline}`;
+const hasNews = (await getNews()).length > 0;
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/research', label: 'Research' },
+  { href: '/people', label: 'People' },
+  { href: '/publications', label: 'Publications' },
+  ...(hasNews ? [{ href: '/news', label: 'News' }] : []),
+  { href: '/contact', label: 'Contact' },
+];
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const year = new Date().getFullYear();
+const [phoneMain, phoneExt] = settings.phone.split(/ext\.?:?/i).map((s) => s.replace(/[^+\d]/g, ''));
+const telHref = `tel:${phoneMain}${phoneExt ? ',' + phoneExt : ''}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#1b2353" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- Sends invited editors who land on the home page straight to the admin. -->
+    <script is:inline>
+      if (/(invite|recovery|confirmation)_token|access_token/.test(location.hash) && !location.pathname.startsWith('/admin')) {
+        location.replace('/admin/' + location.hash);
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="container bar">
+        <a href="/" class="brand" aria-label={`${settings.lab_name} home`}><Wordmark /></a>
+        <button class="menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+          <Icon name="menu" class="i-open" /><Icon name="close" class="i-close" />
+        </button>
+        <nav id="site-nav" aria-label="Main">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main"><slot /></main>
+
+    <footer class="site-footer">
+      <div class="container foot-grid">
+        <div class="foot-brand">
+          <Wordmark light />
+          <p class="foot-tag">{settings.tagline}</p>
+          {settings.footer_text && <p class="foot-text">{settings.footer_text}</p>}
+          {settings.instagram && (
+            <a class="social" href={`https://www.instagram.com/${settings.instagram}/`} target="_blank" rel="noopener">
+              <Icon name="instagram" size={20} /> @{settings.instagram}
+            </a>
+          )}
+        </div>
+        <div>
+          <h4>Visit</h4>
+          <p class="foot-text addr">{settings.address}</p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="foot-list">
+            {settings.emails.map((e) => <li><a href={`mailto:${e}`}>{e}</a></li>)}
+            {settings.phone && <li><a href={telHref}>{settings.phone}</a></li>}
+          </ul>
+        </div>
+        <div>
+          <h4>Affiliations</h4>
+          <ul class="foot-list">
+            {settings.affiliations.map((a) => <li>{a.url ? <a href={a.url} target="_blank" rel="noopener">{a.name}</a> : a.name}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div class="container foot-bottom">
+        <span>© {year} {settings.lab_name}. All rights reserved.</span>
+        <span class="foot-dot" aria-hidden="true"></span>
+        <span>{settings.affiliations.map((a) => a.name).join(' · ')}</span>
+      </div>
+    </footer>
+
+    <script>
+      const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+      const header = document.querySelector('.site-header');
+      btn?.addEventListener('click', () => {
+        const open = header!.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+      const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 8);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--navy); color: #fff; padding: 8px 14px; border-radius: 8px; z-index: 100; }
+  .skip:focus { left: 8px; }
+
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: saturate(160%) blur(10px);
+    -webkit-backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .site-header.scrolled { border-color: var(--line); box-shadow: 0 6px 24px rgba(27, 35, 83, 0.05); }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .brand { text-decoration: none; }
+  nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  nav a {
+    display: block; padding: 8px 14px; border-radius: 999px;
+    font-family: var(--font-head); font-weight: 500; font-size: 0.98rem; letter-spacing: 0.03em;
+    color: var(--navy); text-decoration: none; transition: color 0.2s, background 0.2s;
+  }
+  nav a:hover { color: var(--teal); }
+  nav a[aria-current='page'] { color: var(--teal); background: var(--teal-light); }
+  .menu-btn { display: none; background: none; border: 0; color: var(--navy); padding: 8px; cursor: pointer; }
+  .menu-btn :global(.i-close) { display: none; }
+
+  @media (max-width: 920px) {
+    .menu-btn { display: inline-flex; }
+    nav { position: absolute; left: 0; right: 0; top: 76px; background: #fff; border-bottom: 1px solid var(--line); display: none; box-shadow: 0 16px 32px rgba(27, 35, 83, 0.08); }
+    .open nav { display: block; }
+    .open .menu-btn :global(.i-open) { display: none; }
+    .open .menu-btn :global(.i-close) { display: block; }
+    nav ul { flex-direction: column; padding: 10px 18px 20px; gap: 2px; }
+    nav a { padding: 12px 14px; border-radius: 10px; font-size: 1.05rem; }
+  }
+
+  .site-footer { background: var(--navy); color: #c9cee3; padding: 72px 0 0; margin-top: 0; font-size: 0.95rem; }
+  .foot-grid { display: grid; grid-template-columns: 1.5fr 1.2fr 1fr 1fr; gap: 40px; }
+  .site-footer h4 { color: #fff; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.22em; margin-bottom: 16px; font-weight: 500; }
+  .foot-tag { font-family: var(--font-head); letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.78rem; color: #8fd3cc; margin: 16px 0 8px; }
+  .foot-text { color: #aab1cc; margin: 0 0 16px; max-width: 32ch; }
+  .addr { white-space: pre-line; }
+  .foot-list { list-style: none; margin: 0; padding: 0; }
+  .foot-list li { margin-bottom: 8px; }
+  .site-footer a { color: #dfe3f2; text-decoration: none; }
+  .site-footer a:hover { color: #8fd3cc; }
+  .social { display: inline-flex; align-items: center; gap: 8px; }
+  .foot-bottom {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 56px; padding-top: 22px; padding-bottom: 28px;
+    color: #8c93b1; font-size: 0.85rem;
+  }
+  .foot-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+  @media (max-width: 900px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .foot-grid { grid-template-columns: 1fr; gap: 32px; } }
+</style>
