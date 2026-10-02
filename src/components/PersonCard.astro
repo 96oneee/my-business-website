@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { initials } from '../lib/site';
+interface Props { person: CollectionEntry<'people'>; compact?: boolean }
+const { person, compact = false } = Astro.props;
+const p = person.data;
+---
+<a href={`/people/${person.id}`} class:list={['card', 'person', { compact }]}>
+  <div class="photo">
+    {p.photo ? <img src={p.photo} alt={`Portrait of ${p.name}`} loading="lazy" /> : <span class="mono">{initials(p.name)}</span>}
+  </div>
+  <div class="body">
+    <h3>{p.name}</h3>
+    <p class="role">{p.position}</p>
+    {!compact && p.summary && <p class="sum">{p.summary}</p>}
+  </div>
+</a>
+<style>
+  .person { overflow: hidden; height: 100%; display: flex !important; flex-direction: column; }
+  .photo { aspect-ratio: 4 / 5; background: linear-gradient(160deg, var(--teal-light), #f1f3f9); overflow: hidden; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; transition: transform 0.5s; }
+  .person:hover .photo img { transform: scale(1.03); }
+  .mono {
+    display: flex; align-items: center; justify-content: center; height: 100%;
+    font-family: var(--font-head); font-size: 3.2rem; letter-spacing: 0.08em; color: var(--navy); opacity: 0.75;
+  }
+  .body { padding: 20px 22px 24px; }
+  h3 { margin: 0 0 4px; font-size: 1.2rem; }
+  .role { color: var(--teal); font-size: 0.9rem; font-weight: 500; margin: 0 0 10px; }
+  .sum { color: var(--slate); font-size: 0.93rem; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  @media (max-width: 720px) {
+    .body { padding: 14px 14px 18px; }
+    h3 { font-size: 1.02rem; }
+    .role { font-size: 0.82rem; }
+    .sum { display: none; }
+  }
+  .compact .photo { aspect-ratio: 1; }
+  .compact .body { padding: 14px 16px 18px; }
+  .compact h3 { font-size: 1.02rem; }
+  .compact .role { margin: 0; font-size: 0.82rem; }
+</style>

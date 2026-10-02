@@ -1,0 +1,20 @@
+---
+interface Props { light?: boolean }
+const { light = false } = Astro.props;
+---
+<span class:list={['wordmark', { light }]}>
+  <img src="/images/logo-mark.png" alt="" width="40" height="39" />
+  <span class="wm-text">NO.<b>KIT</b>.LAB</span>
+</span>
+<style>
+  .wordmark { display: inline-flex; align-items: center; gap: 12px; }
+  .wordmark img { width: 40px; height: auto; }
+  .wm-text {
+    font-family: var(--font-head); font-weight: 500; font-size: 1.35rem;
+    letter-spacing: 0.14em; color: var(--navy); line-height: 1;
+  }
+  .wm-text b { color: var(--teal); font-weight: 500; }
+  .light .wm-text { color: #fff; }
+  .light .wm-text b { color: #5fc4bb; }
+  .light img { background: #fff; border-radius: 50%; padding: 3px; }
+</style>

@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { getSettings } from '../lib/site';
+const s = await getSettings();
+const [phoneMain, phoneExt] = s.phone.split(/ext\.?:?/i).map((x) => x.replace(/[^+\d]/g, ''));
+const tel = `tel:${phoneMain}${phoneExt ? ',' + phoneExt : ''}`;
+---
+<Base title="Contact" description={`Contact ${s.lab_name} at the American University of Beirut.`}>
+  <PageHero eyebrow="Contact" title="Get in touch" intro="Questions about our research, collaborations or joining the lab? We would love to hear from you." />
+  <section class="section">
+    <div class="container contact">
+      <div class="cards">
+        <div class="card c">
+          <span class="ic"><Icon name="mail" /></span>
+          <div>
+            <h2>Email</h2>
+            {s.emails.map((e) => <p><a href={`mailto:${e}`}>{e}</a></p>)}
+          </div>
+        </div>
+        {s.phone && (
+          <div class="card c">
+            <span class="ic"><Icon name="phone" /></span>
+            <div><h2>Phone</h2><p><a href={tel}>{s.phone}</a></p></div>
+          </div>
+        )}
+        <div class="card c">
+          <span class="ic"><Icon name="pin" /></span>
+          <div>
+            <h2>Address</h2>
+            <p class="addr">{s.address}</p>
+            {s.map_link && <a class="text-link" href={s.map_link} target="_blank" rel="noopener">Open in maps <Icon name="arrow" /></a>}
+          </div>
+        </div>
+        {s.instagram && (
+          <div class="card c">
+            <span class="ic"><Icon name="instagram" /></span>
+            <div><h2>Instagram</h2><p><a href={`https://www.instagram.com/${s.instagram}/`} target="_blank" rel="noopener">@{s.instagram}</a></p></div>
+          </div>
+        )}
+      </div>
+      {s.map_embed_url && (
+        <div class="map card">
+          <iframe width="100%" height="100%" title="Map of the American University of Beirut" src={s.map_embed_url} loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+<style>
+  .contact { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: stretch; }
+  .cards { display: grid; gap: 18px; }
+  .c { display: flex; gap: 20px; padding: 26px 28px; }
+  .c h2 { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--slate); margin-bottom: 8px; font-family: var(--font-head); }
+  .c p { margin: 0 0 4px; font-size: 1.05rem; }
+  .c a { color: var(--navy); }
+  .c a:hover { color: var(--teal); }
+  .addr { white-space: pre-line; color: var(--ink); line-height: 1.6; margin-bottom: 12px !important; }
+  .ic { width: 48px; height: 48px; border-radius: 50%; background: var(--teal-light); color: var(--teal); display: flex; align-items: center; justify-content: center; flex: none; }
+  .map { overflow: hidden; min-height: 420px; }
+  .map iframe { width: 100%; height: 100%; min-height: 420px; border: 0; display: block; }
+  @media (max-width: 900px) { .contact { grid-template-columns: 1fr; } }
+</style>

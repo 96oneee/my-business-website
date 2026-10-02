@@ -1,0 +1,36 @@
+lab_name: NO.KIT.LAB
+tagline: Engineering Biology. Advancing Discovery.
+eyebrow: RESEARCH • DISCOVERY • INNOVATION
+hero_headline: Engineering Biology. Advancing Discovery.
+hero_description: >-
+  Our laboratory focuses on translational and functional genomics to understand how genetic
+  alterations drive human disease. We combine CRISPR-based genome editing, in vivo cancer modeling,
+  molecular biology, and genomic approaches to uncover the functional consequences of
+  disease-associated genes and variants. Our research spans cancer biology and rare genetic
+  disorders, with a particular interest in translating discoveries from genomic data into biological
+  mechanisms and, ultimately, new opportunities for precision medicine.
+primary_button:
+  label: Explore our research
+  link: /research
+secondary_button:
+  label: Meet the team
+  link: /people
+affiliations:
+  - name: American University of Beirut
+    url: https://www.aub.edu.lb
+  - name: Case Western Reserve University
+    url: https://case.edu
+emails:
+  - axk1472@case.edu
+  - ak195@aub.edu.lb
+phone: +961 1 350 000 Ext. 4807
+address: |-
+  Diana Tamari Sabbagh (DTS) Building, 4th Floor, Room 419-b
+  Department of Biochemistry & Molecular Genetics, Faculty of Medicine
+  American University of Beirut, Beirut, Lebanon
+instagram: no.kit.lab
+map_embed_url: https://www.openstreetmap.org/export/embed.html?bbox=35.4745%2C33.8955%2C35.4885%2C33.9035&layer=mapnik&marker=33.8990%2C35.4820
+map_link: https://www.openstreetmap.org/?mlat=33.8990&mlon=35.4820#map=17/33.8990/35.4820
+pubmed_query: '"Khalil, Athar"[Full Author Name] OR (Khalil A[Author] AND ("American University of Beirut"[Affiliation] OR "Case Western Reserve"[Affiliation]))'
+pubmed_link: https://pubmed.ncbi.nlm.nih.gov/?term=athar+khalil&sort=date
+footer_text: Translational and functional genomics at the American University of Beirut.
