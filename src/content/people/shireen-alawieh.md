@@ -1,13 +1,14 @@
 ---
 name: Shireen Alawieh
 group: grad
-position: Second-Year MSc Student
+position: Master’s Student
 order: 1
 photo: /uploads/people/shireen-alawieh.jpg
-summary: Translational research on the protein interactors of KMT2D and the molecular mechanisms of Kabuki syndrome.
+summary: Translational research on the protein interactors of KMT2D and the
+  molecular mechanisms of Kabuki syndrome.
 description: Enjoys reading, strength training, and spending quality time with family.
-fun_fact: ""
 hobbies: ""
+fun_fact: ""
 emails:
   - ssa77@mail.aub.edu
 links: []
