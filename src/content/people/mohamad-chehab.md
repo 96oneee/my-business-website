@@ -3,7 +3,7 @@ name: Mohamad Chehab
 group: grad
 position: Master’s Student
 order: 2
-photo: ""
+photo: /uploads/professional-scientist-in-modern-laboratory.png
 summary: Translational research on inborn errors of metabolism, integrating
   clinical genomics and biochemical investigation.
 description: Those who know him say he has a rather strict personality with a
