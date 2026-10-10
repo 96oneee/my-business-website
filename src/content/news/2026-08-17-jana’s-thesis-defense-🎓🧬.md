@@ -5,4 +5,4 @@ image: /uploads/whatsapp-image-2026-10-11-at-00.31.42.jpeg
 summary: .
 draft: false
 ---
-Celebrating Jana’s hard work, dedication, and achievement as she reaches this important milestone. A proud moment for Jana and the entire NO.KIT.LAB family! 💙✨
+A milestone worth celebrating! Congratulations to Jana on completing her thesis defense, marking the achievement of a meaningful chapter in her scientific journey. The NO.KIT.LAB team is proud to celebrate with her! 💙✨
