@@ -2,7 +2,7 @@
 name: Jana Abou Zaid
 group: ra
 position: Research Assistant
-order: 2
+order: 1
 photo: /uploads/e7fe5037-68e4-4b02-bba9-c4609b874eda.jpeg
 summary: MSc in Biochemistry and Molecular Genetics (AUB). Genetics,
   biotechnology and biomedical research.
