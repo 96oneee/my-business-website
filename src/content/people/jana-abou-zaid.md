@@ -14,7 +14,7 @@ emails:
 links: []
 visible: true
 ---
-- Bachelor's degree in Biology, Lebanese International University (LIU)
-- Master's degree in Biochemistry and Molecular Genetics, American University of Beirut (AUB)
+* Bachelor's Degree in Biology, Lebanese International University (LIU)
+* Master's Degree in Biochemistry and Molecular Genetics, American University of Beirut (AUB)
 
-Focus: genetics, biotechnology, and biomedical research.
+Jana completed her research internship at NO.KIT.LAB at the American University of Beirut (AUB), where she carried out her thesis research project as part of her Master's degree. Following her internship, she joined the lab as a Research Assistant, continuing to contribute to research in genetics, biotechnology, and biomedical sciences.
