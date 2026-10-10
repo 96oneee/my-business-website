@@ -1,13 +1,17 @@
 ---
 name: Mohamad Chehab
 group: grad
-position: Master's Research Student
+position: Master’s Student
 order: 2
 photo: ""
-summary: Translational research on inborn errors of metabolism, integrating clinical genomics and biochemical investigation.
-description: Those who know him say he has a rather strict personality with a slight sense of humor. Hence, no fun facts. 😉 In his free time he reads novels and practices Arabic calligraphy, a skill he is continuously learning and developing.
-fun_fact: ""
+summary: Translational research on inborn errors of metabolism, integrating
+  clinical genomics and biochemical investigation.
+description: Those who know him say he has a rather strict personality with a
+  slight sense of humor. Hence, no fun facts. 😉 In his free time he reads
+  novels and practices Arabic calligraphy, a skill he is continuously learning
+  and developing.
 hobbies: Reading novels and Arabic calligraphy.
+fun_fact: ""
 emails:
   - mrc10@mail.aub.edu
 links: []
