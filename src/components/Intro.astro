@@ -6,8 +6,8 @@
 //   'off'      nobody
 const MODE: 'test' | 'everyone' | 'off' = 'everyone';
 
-interface Props { name?: string; highlight?: string; tagline?: string }
-const { name = 'NO.KIT.LAB', highlight = 'KIT', tagline = '' } = Astro.props;
+interface Props { name?: string; highlight?: string; byline?: string; tagline?: string }
+const { name = 'NO.KIT.LAB', highlight = 'KIT', byline = 'by Dr. Athar Khalil', tagline = '' } = Astro.props;
 const at = highlight ? name.indexOf(highlight) : -1;
 const letters = [...name].map((ch, i) => ({ ch, hi: at >= 0 && i >= at && i < at + highlight.length }));
 const [tag1, ...tagRest] = tagline.split(/(?<=\.)\s+/);
@@ -24,6 +24,7 @@ const tag2 = tagRest.join(' ');
       <div class="name">
         {letters.map((l, i) => <span class:list={{ hi: l.hi }} style={`--i:${i}`}>{l.ch}</span>)}
       </div>
+      {byline && <p class="by">{byline}</p>}
       <div class="rule"><span></span><i></i><span></span></div>
       {tagline && (
         <p class="tag"><span>{tag1}</span>{tag2 && <span class="t2">{tag2}</span>}</p>
@@ -98,6 +99,12 @@ const tag2 = tagRest.join(' ');
   }
   .name .hi { color: var(--teal); }
 
+  .by {
+    margin: 14px 0 0; font-family: var(--font-head); font-weight: 400;
+    font-size: clamp(1rem, 3.6vw, 1.35rem); letter-spacing: 0.08em; color: var(--slate);
+    opacity: 0; transform: translateY(0.4em); animation: rise 0.6s ease-out 1.75s forwards;
+  }
+
   .rule { display: flex; align-items: center; gap: 10px; margin-top: 22px; width: min(82vw, 440px); }
   .rule span { flex: 1; height: 2px; transform: scaleX(0); animation: grow 0.6s ease-out 1.8s forwards; }
   .rule span:first-child { background: var(--navy); transform-origin: right; }
@@ -135,6 +142,6 @@ const tag2 = tagRest.join(' ');
   /* Visitors who ask their device for less motion get a simple fade. */
   .calm *, .calm *::before { animation: none !important; }
   .calm .emblem img { clip-path: none; }
-  .calm .name span, .calm .tag span, .calm .rule span, .calm .rule i, .calm .skip-intro { opacity: 1; transform: none; }
+  .calm .name span, .calm .by, .calm .tag span, .calm .rule span, .calm .rule i, .calm .skip-intro { opacity: 1; transform: none; }
   .calm .ring { display: none; }
 </style>
