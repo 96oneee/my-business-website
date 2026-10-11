@@ -61,20 +61,23 @@ const ogImage = new URL(image, Astro.site);
     <Intro name={header.name} highlight={header.highlight} tagline={settings.tagline} />
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
-      <div class="container bar">
+      <div class="bar">
         <a href="/" class="brand" aria-label={`${settings.lab_name} home`}><Wordmark {...header} /></a>
         <button class="menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
           <Icon name="menu" class="i-open" /><Icon name="close" class="i-close" />
         </button>
         <nav id="site-nav" aria-label="Main">
           <ul>
-            {nav.map((n) => (
-              <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+            <li class="glide" aria-hidden="true"></li>
+            {nav.map((n, i) => (
+              <li style={`--n:${i}`}><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
             ))}
           </ul>
         </nav>
       </div>
+      <span class="progress" aria-hidden="true"></span>
     </header>
+    <div class="header-space" aria-hidden="true"></div>
 
     <main id="main"><slot /></main>
 
@@ -123,9 +126,43 @@ const ogImage = new URL(image, Astro.site);
         btn.setAttribute('aria-expanded', String(open));
         btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       });
-      const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 8);
-      window.addEventListener('scroll', onScroll, { passive: true });
+      // Big bar at the top of the page, compact bar once the visitor scrolls (with a little
+      // gap between the two thresholds so it doesn't flicker), plus a reading-progress line.
+      const progress = document.querySelector<HTMLElement>('.site-header .progress');
+      let ticking = false;
+      const onScroll = () => {
+        ticking = false;
+        const y = window.scrollY;
+        if (y > 40) header?.classList.add('scrolled');
+        else if (y < 10) header?.classList.remove('scrolled');
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress?.style.setProperty('--p', String(max > 0 ? Math.min(1, y / max) : 0));
+      };
+      const queue = () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } };
+      window.addEventListener('scroll', queue, { passive: true });
+      window.addEventListener('resize', queue);
       onScroll();
+
+      // A soft highlight that glides between menu items under the cursor.
+      const list = document.querySelector<HTMLElement>('#site-nav ul');
+      const glide = list?.querySelector<HTMLElement>('.glide');
+      list?.querySelectorAll<HTMLElement>('a').forEach((a) => {
+        a.addEventListener('mouseenter', () => {
+          if (!glide || !list) return;
+          const box = a.getBoundingClientRect();
+          const base = list.getBoundingClientRect();
+          glide.style.transform = `translateX(${box.left - base.left}px)`;
+          glide.style.width = `${box.width}px`;
+          list.classList.add('gliding');
+        });
+      });
+      list?.addEventListener('mouseleave', () => list.classList.remove('gliding'));
+
+      // On the visit's first page the logo intro plays; when it ends, the bar's items drop in.
+      if (document.querySelector('#intro.on') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        header?.classList.add('waiting');
+        window.addEventListener('intro:done', () => header?.classList.replace('waiting', 'arrive'), { once: true });
+      }
     </script>
   </body>
 </html>
@@ -135,35 +172,122 @@ const ogImage = new URL(image, Astro.site);
   .skip:focus { left: 8px; }
 
   .site-header {
-    position: sticky; top: 0; z-index: 50;
+    --bar-h: 96px;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: saturate(160%) blur(10px);
     -webkit-backdrop-filter: saturate(160%) blur(10px);
     border-bottom: 1px solid transparent;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
   }
-  .site-header.scrolled { border-color: var(--line); box-shadow: 0 6px 24px rgba(27, 35, 83, 0.05); }
-  .bar { display: flex; align-items: center; justify-content: space-between; height: 76px; }
-  .brand { text-decoration: none; }
-  nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  .header-space { height: 96px; }
+  .site-header.scrolled { border-color: var(--line); box-shadow: 0 6px 24px rgba(27, 35, 83, 0.07); background: rgba(255, 255, 255, 0.96); }
+  .bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    height: 96px; max-width: 1600px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 44px);
+    transition: height 0.45s cubic-bezier(.2, .7, .2, 1);
+  }
+  .scrolled .bar { height: 66px; }
+
+  /* Logo: bigger at the top of the page, compact once scrolled. */
+  .brand { text-decoration: none; display: inline-flex; }
+  .brand :global(.wordmark) { gap: 14px; transition: gap 0.45s cubic-bezier(.2, .7, .2, 1); }
+  .brand :global(.wordmark img) { width: 58px; transition: width 0.45s cubic-bezier(.2, .7, .2, 1), transform 0.6s cubic-bezier(.34, 1.56, .64, 1); }
+  .brand :global(.wm-text) { font-size: 1.62rem; transition: font-size 0.45s cubic-bezier(.2, .7, .2, 1), letter-spacing 0.45s ease; }
+  .brand :global(.wm-by) { font-size: 0.8rem; transition: font-size 0.45s cubic-bezier(.2, .7, .2, 1), color 0.3s; }
+  .scrolled .brand :global(.wordmark) { gap: 11px; }
+  .scrolled .brand :global(.wordmark img) { width: 40px; }
+  .scrolled .brand :global(.wm-text) { font-size: 1.3rem; }
+  .scrolled .brand :global(.wm-by) { font-size: 0.72rem; }
+  .brand:hover :global(.wordmark img) { transform: rotate(-12deg) scale(1.08); }
+  .brand:hover :global(.wm-text) { letter-spacing: 0.19em; }
+  .brand:hover :global(.wm-by) { color: var(--teal); }
+
+  /* Menu: a highlight glides between items, an underline grows under the one being pointed at. */
+  nav ul { position: relative; display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
   nav a {
-    display: block; padding: 8px 14px; border-radius: 999px;
-    font-family: var(--font-head); font-weight: 500; font-size: 0.98rem; letter-spacing: 0.03em;
-    color: var(--navy); text-decoration: none; transition: color 0.2s, background 0.2s;
+    position: relative; z-index: 1; display: block; padding: 9px 15px; border-radius: 999px;
+    font-family: var(--font-head); font-weight: 500; font-size: 1.02rem; letter-spacing: 0.03em;
+    color: var(--navy); text-decoration: none; transition: color 0.25s, transform 0.3s cubic-bezier(.2, .7, .2, 1);
   }
-  nav a:hover { color: var(--teal); }
-  nav a[aria-current='page'] { color: var(--teal); background: var(--teal-light); }
-  .menu-btn { display: none; background: none; border: 0; color: var(--navy); padding: 8px; cursor: pointer; }
+  nav a::after {
+    content: ''; position: absolute; left: 15px; right: 15px; bottom: 3px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--navy), var(--teal));
+    transform: scaleX(0); transition: transform 0.35s cubic-bezier(.2, .7, .2, 1);
+  }
+  nav a:hover { color: var(--teal); transform: translateY(-2px); }
+  nav a:hover::after, nav a[aria-current='page']::after { transform: scaleX(1); }
+  nav a[aria-current='page'] { color: var(--teal); }
+  .glide {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px; background: var(--teal-light);
+    opacity: 0; pointer-events: none;
+    transition: transform 0.4s cubic-bezier(.2, .7, .2, 1), width 0.4s cubic-bezier(.2, .7, .2, 1), opacity 0.25s;
+  }
+  .gliding .glide { opacity: 1; }
+
+  /* Reading progress along the bottom edge of the compact bar. */
+  .progress {
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: linear-gradient(90deg, var(--navy), var(--teal));
+    transform-origin: left; transform: scaleX(var(--p, 0)); opacity: 0; transition: opacity 0.3s;
+  }
+  .scrolled .progress { opacity: 1; }
+
+  /* On a computer, pointing at the compact bar opens it back up to full size. */
+  @media (hover: hover) and (pointer: fine) and (min-width: 921px) {
+    .site-header.scrolled:hover .bar { height: 96px; }
+    .site-header.scrolled:hover .brand :global(.wordmark) { gap: 14px; }
+    .site-header.scrolled:hover .brand :global(.wordmark img) { width: 58px; }
+    .site-header.scrolled:hover .brand :global(.wm-text) { font-size: 1.62rem; }
+    .site-header.scrolled:hover .brand :global(.wm-by) { font-size: 0.8rem; }
+  }
+
+  /* After the logo intro, the logo and menu items drop in one by one. */
+  .waiting .brand, .waiting nav li:not(.glide), .waiting .menu-btn { opacity: 0; }
+  .arrive .brand { animation: drop 0.6s cubic-bezier(.2, .7, .2, 1) both; }
+  .arrive .menu-btn { animation: drop 0.6s cubic-bezier(.2, .7, .2, 1) 0.15s both; }
+  .arrive nav li:not(.glide) { animation: drop 0.55s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(0.12s + var(--n) * 0.06s); }
+  @keyframes drop { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+
+  .menu-btn { display: none; background: none; border: 0; color: var(--navy); padding: 8px; cursor: pointer; border-radius: 12px; transition: background 0.2s, transform 0.3s; }
+  @media (hover: hover) { .menu-btn:hover { background: var(--teal-light); } }
   .menu-btn :global(.i-close) { display: none; }
 
   @media (max-width: 920px) {
+    .header-space { height: 80px; }
+    .bar { height: 80px; }
+    .scrolled .bar { height: 62px; }
+    .brand :global(.wordmark img) { width: 48px; }
+    .brand :global(.wm-text) { font-size: 1.4rem; }
+    .brand :global(.wm-by) { font-size: 0.76rem; }
+    .scrolled .brand :global(.wordmark img) { width: 38px; }
+    .scrolled .brand :global(.wm-text) { font-size: 1.2rem; }
+    .scrolled .brand :global(.wm-by) { font-size: 0.7rem; }
+
     .menu-btn { display: inline-flex; }
-    nav { position: absolute; left: 0; right: 0; top: 76px; background: #fff; border-bottom: 1px solid var(--line); display: none; box-shadow: 0 16px 32px rgba(27, 35, 83, 0.08); }
-    .open nav { display: block; }
+    .open .menu-btn { transform: rotate(90deg); }
+    nav {
+      position: absolute; left: 0; right: 0; top: 100%; background: #fff; border-bottom: 1px solid var(--line);
+      box-shadow: 0 16px 32px rgba(27, 35, 83, 0.08);
+      visibility: hidden; opacity: 0; transform: translateY(-8px);
+      transition: opacity 0.25s, transform 0.3s cubic-bezier(.2, .7, .2, 1), visibility 0s 0.3s;
+    }
+    .open nav { visibility: visible; opacity: 1; transform: none; transition: opacity 0.25s, transform 0.3s cubic-bezier(.2, .7, .2, 1); }
     .open .menu-btn :global(.i-open) { display: none; }
     .open .menu-btn :global(.i-close) { display: block; }
     nav ul { flex-direction: column; padding: 10px 18px 20px; gap: 2px; }
+    .glide { display: none; }
+    nav li:not(.glide) { opacity: 0; transform: translateX(-12px); transition: opacity 0.3s, transform 0.35s cubic-bezier(.2, .7, .2, 1); }
+    .open nav li:not(.glide) { opacity: 1; transform: none; transition-delay: calc(0.04s + var(--n) * 0.04s); }
     nav a { padding: 12px 14px; border-radius: 10px; font-size: 1.05rem; }
+    nav a:hover { transform: none; }
+    nav a::after { left: 14px; right: auto; width: 28px; bottom: 6px; transform-origin: left; }
+    nav a[aria-current='page'] { background: var(--teal-light); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header *, .site-header *::after, .site-header :global(*) { transition-duration: 0.01s !important; animation: none !important; }
+    .brand:hover :global(.wordmark img) { transform: none; }
   }
 
   .site-footer { background: var(--navy); color: #c9cee3; padding: 72px 0 0; margin-top: 0; font-size: 0.95rem; }

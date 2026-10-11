@@ -52,6 +52,7 @@ const tag2 = tagRest.join(' ');
         done = true;
         el.classList.add('out');
         root.style.overflow = '';
+        dispatchEvent(new Event('intro:done'));
         setTimeout(function () { el.remove(); }, 750);
       }
       setTimeout(finish, reduce ? 1600 : 4200);
