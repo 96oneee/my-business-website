@@ -3,12 +3,13 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Gallery from '../../components/Gallery.astro';
-import { getNews, formatDate } from '../../lib/site';
+import { getNews, getSections, formatDate } from '../../lib/site';
 
 export async function getStaticPaths() {
   return (await getNews()).map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
+const { news: sec } = await getSections();
 const { Content } = await render(post);
 const photos = (post.data.gallery ?? []).filter((src): src is string => !!src);
 const cover = post.data.image || photos[0];
@@ -18,7 +19,7 @@ const extra = post.data.image ? photos : photos.slice(1);
 <Base title={post.data.title} description={post.data.summary || undefined} image={cover || undefined}>
   <article class="section">
     <div class="container narrow">
-      <a class="back" href="/news"><Icon name="arrow-left" size={18} /> All news</a>
+      <a class="back" href="/news"><Icon name="arrow-left" size={18} /> Back to {sec.menu}</a>
       <p class="date">{formatDate(post.data.date)}</p>
       <h1>{post.data.title}</h1>
       <div class="divider"><span></span></div>
