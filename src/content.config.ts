@@ -57,6 +57,18 @@ const sections = defineCollection({
   }),
 });
 
+// The top bar: logo, lab name and the line under it ("Header (top bar)" in the admin).
+const header = defineCollection({
+  loader: glob({ pattern: 'header.yml', base: './src/content/settings' }),
+  schema: z.object({
+    logo: z.string().nullish().transform((v) => v || '/images/logo-mark.png'),
+    name: z.string().nullish().transform((v) => v?.trim() || 'NO.KIT.LAB'),
+    highlight: z.string().nullish().transform((v) => v?.trim() ?? ''),
+    byline: z.string().nullish().transform((v) => v?.trim() ?? ''),
+    hidden_from_menu: z.array(z.string()).nullish().transform((v) => v ?? []),
+  }),
+});
+
 const pages = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/pages' }),
   schema: z.object({
@@ -142,4 +154,4 @@ const publicationOverrides = defineCollection({
   }),
 });
 
-export const collections = { settings, sections, pages, research, people, news, publicationOverrides };
+export const collections = { settings, sections, header, pages, research, people, news, publicationOverrides };
