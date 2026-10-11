@@ -92,6 +92,35 @@ collections:
               - { name: heading, label: Page heading, widget: string }
               - { name: intro, label: Text under the heading, widget: text, required: false }
 
+  # ------------------------------------------------------ Header (top bar)
+  - name: header
+    label: Header (top bar)
+    description: The bar at the top of every page, with the logo, the lab name, the line under it and the menu. The logo and name also appear in the footer.
+    editor: { preview: false }
+    files:
+      - name: header
+        label: Header (top bar)
+        file: src/content/settings/header.yml
+        fields:
+          - { name: logo, label: Logo, widget: image, required: false, hint: 'A small square picture works best. Leave empty to use the lab logo.' }
+          - { name: name, label: Lab name next to the logo, widget: string }
+          - { name: highlight, label: Part of the name shown in colour, widget: string, required: false, hint: 'Type the exact letters, e.g. KIT. Leave empty for no colour.' }
+          - { name: byline, label: Small line under the name, widget: string, required: false, hint: 'e.g. by Dr. Athar. Leave empty to hide it.' }
+          - name: hidden_from_menu
+            label: Hide these sections from the menu
+            widget: select
+            multiple: true
+            required: false
+            hint: The pages still exist; they just don't show in the menu. To rename a section, use "Menu & section names".
+            options:
+              - { label: Home, value: home }
+              - { label: About, value: about }
+              - { label: Research, value: research }
+              - { label: People, value: people }
+              - { label: Publications, value: publications }
+              - { label: News, value: news }
+              - { label: Contact, value: contact }
+
   # ---------------------------------------------------------------- Settings
   - name: settings
     label: Site settings

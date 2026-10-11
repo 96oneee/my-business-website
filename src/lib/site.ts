@@ -14,6 +14,13 @@ export async function getSections() {
   return entry.data;
 }
 
+/** Logo, lab name and byline shown in the top bar and footer. */
+export async function getHeader() {
+  const entry = await getEntry('header', 'header');
+  if (!entry) throw new Error('Missing src/content/settings/header.yml');
+  return entry.data;
+}
+
 /** Render a short Markdown string from a front-matter field. */
 export function md(text?: string | null) {
   return text ? (marked.parse(text, { async: false }) as string) : '';
