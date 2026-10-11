@@ -28,6 +28,70 @@ media_folder: public/uploads
 public_folder: /uploads
 
 collections:
+  # ------------------------------------------------- Menu & section names
+  - name: sections
+    label: Menu & section names
+    description: Rename the sections of the site (Home, About, Research…). Page addresses stay the same, so existing links keep working.
+    editor: { preview: false }
+    files:
+      - name: sections
+        label: Menu & section names
+        file: src/content/settings/sections.yml
+        fields:
+          - name: home
+            label: Home
+            widget: object
+            collapsed: false
+            hint: 'The home page headline is under Site settings.'
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+          - name: about
+            label: About
+            widget: object
+            collapsed: false
+            hint: 'The About page heading and introduction are under Pages.'
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+          - name: research
+            label: Research
+            widget: object
+            collapsed: false
+            hint: 'The Research page heading and introduction are under Pages.'
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+          - name: people
+            label: People
+            widget: object
+            collapsed: false
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+              - { name: heading, label: Page heading, widget: string }
+              - { name: intro, label: Text under the heading, widget: text, required: false }
+          - name: publications
+            label: Publications
+            widget: object
+            collapsed: false
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+              - { name: heading, label: Page heading, widget: string }
+              - { name: intro, label: Text under the heading, widget: text, required: false }
+          - name: news
+            label: News
+            widget: object
+            collapsed: false
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+              - { name: heading, label: Page heading, widget: string }
+              - { name: intro, label: Text under the heading, widget: text, required: false }
+          - name: contact
+            label: Contact
+            widget: object
+            collapsed: false
+            fields:
+              - { name: menu, label: Name in the menu, widget: string, hint: 'Also shown as the small label above the page heading and in the browser tab.' }
+              - { name: heading, label: Page heading, widget: string }
+              - { name: intro, label: Text under the heading, widget: text, required: false }
+
   # ---------------------------------------------------------------- Settings
   - name: settings
     label: Site settings

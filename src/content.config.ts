@@ -7,7 +7,7 @@ const link = z.object({ label: z.string(), url: z.string() });
 const gallery = z.array(z.string().nullish()).nullish();
 
 const settings = defineCollection({
-  loader: glob({ pattern: '*.yml', base: './src/content/settings' }),
+  loader: glob({ pattern: 'site.yml', base: './src/content/settings' }),
   schema: z.object({
     lab_name: z.string(),
     tagline: z.string(),
@@ -26,6 +26,34 @@ const settings = defineCollection({
     pubmed_query: z.string(),
     pubmed_link: z.string(),
     footer_text: z.string().default(''),
+  }),
+});
+
+// Menu names and page headings ("Menu & section names" in the admin).
+const name = (menu: string, heading = '', intro = '') =>
+  z
+    .object({
+      menu: z.string().nullish(),
+      heading: z.string().nullish(),
+      intro: z.string().nullish(),
+    })
+    .nullish()
+    .transform((v) => ({
+      menu: v?.menu?.trim() || menu,
+      heading: v?.heading?.trim() || heading || v?.menu?.trim() || menu,
+      intro: v?.intro?.trim() ?? intro,
+    }));
+
+const sections = defineCollection({
+  loader: glob({ pattern: 'sections.yml', base: './src/content/settings' }),
+  schema: z.object({
+    home: name('Home'),
+    about: name('About'),
+    research: name('Research'),
+    people: name('People', 'Meet the team'),
+    publications: name('Publications'),
+    news: name('News', 'Lab news'),
+    contact: name('Contact', 'Get in touch'),
   }),
 });
 
@@ -114,4 +142,4 @@ const publicationOverrides = defineCollection({
   }),
 });
 
-export const collections = { settings, pages, research, people, news, publicationOverrides };
+export const collections = { settings, sections, pages, research, people, news, publicationOverrides };

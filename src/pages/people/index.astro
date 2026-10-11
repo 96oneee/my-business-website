@@ -3,8 +3,9 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import PersonCard from '../../components/PersonCard.astro';
 import Icon from '../../components/Icon.astro';
-import { getPeople, GROUPS, md } from '../../lib/site';
+import { getPeople, getSections, GROUPS, md } from '../../lib/site';
 
+const { people: sec } = await getSections();
 const people = await getPeople();
 const pi = people.filter((p) => p.data.group === 'pi');
 const groups = GROUPS.filter((g) => g.key !== 'pi' && g.key !== 'alumni')
@@ -12,8 +13,8 @@ const groups = GROUPS.filter((g) => g.key !== 'pi' && g.key !== 'alumni')
   .filter((g) => g.members.length);
 const alumni = people.filter((p) => p.data.group === 'alumni');
 ---
-<Base title="People" description="Meet the members of NO.KIT.LAB at the American University of Beirut.">
-  <PageHero eyebrow="People" title="Meet the team" intro="A growing, collaborative group of scientists working where genetics, cancer biology and biotechnology meet." />
+<Base title={sec.menu} description="Meet the members of NO.KIT.LAB at the American University of Beirut.">
+  <PageHero eyebrow={sec.menu} title={sec.heading} intro={sec.intro} />
 
   {pi.map((p) => (
     <section class="section pi-section">

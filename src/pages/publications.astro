@@ -3,18 +3,19 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import PubItem from '../components/PubItem.astro';
 import Icon from '../components/Icon.astro';
-import { getSettings } from '../lib/site';
+import { getSettings, getSections } from '../lib/site';
 import { getPublications } from '../lib/publications';
 
 const s = await getSettings();
+const { publications: sec } = await getSections();
 const { items } = await getPublications();
 const featured = items.filter((p) => p.featured);
 const years = [...new Set(items.map((p) => p.year))].sort((a, b) => b - a);
 const byYear = years.map((y) => ({ year: y, pubs: items.filter((p) => p.year === y) }));
 const updated = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
-<Base title="Publications" description="Peer-reviewed publications from NO.KIT.LAB and Prof. Athar Khalil.">
-  <PageHero eyebrow="Publications" title="Publications" intro="Peer-reviewed work from the lab and its principal investigator. This list updates automatically from PubMed.">
+<Base title={sec.menu} description="Peer-reviewed publications from NO.KIT.LAB and Prof. Athar Khalil.">
+  <PageHero eyebrow={sec.menu} title={sec.heading} intro={sec.intro}>
     <div class="btn-row" style="margin-top:28px">
       <a class="btn btn--ghost" href={s.pubmed_link} target="_blank" rel="noopener">View all on PubMed <Icon name="external" /></a>
     </div>

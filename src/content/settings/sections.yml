@@ -1,0 +1,24 @@
+# Names of the site's sections, edited in the admin under "Menu & section names".
+# Page addresses (/about, /research…) never change, only the names shown.
+home:
+  menu: Home
+about:
+  menu: About
+research:
+  menu: Research
+people:
+  menu: People
+  heading: Meet the team
+  intro: A growing, collaborative group of scientists working where genetics, cancer biology and biotechnology meet.
+publications:
+  menu: Publications
+  heading: Publications
+  intro: Peer-reviewed work from the lab and its principal investigator. This list updates automatically from PubMed.
+news:
+  menu: News
+  heading: Lab news
+  intro: New papers, new members, conferences and milestones.
+contact:
+  menu: Contact
+  heading: Get in touch
+  intro: Questions about our research, collaborations or joining the lab? We would love to hear from you.
