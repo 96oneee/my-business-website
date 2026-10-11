@@ -4,7 +4,7 @@
 //   'test'     only links with ?intro (e.g. nokitlab.com/?intro), for trying it out
 //   'everyone' every visitor, once per browser visit
 //   'off'      nobody
-const MODE: 'test' | 'everyone' | 'off' = 'test';
+const MODE: 'test' | 'everyone' | 'off' = 'everyone';
 
 interface Props { name?: string; highlight?: string; tagline?: string }
 const { name = 'NO.KIT.LAB', highlight = 'KIT', tagline = '' } = Astro.props;
