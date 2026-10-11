@@ -18,6 +18,12 @@ display_url: /
 logo_url: /images/logo-full.png
 locale: en
 
+# Keep file names and page addresses plain (emoji and accents are dropped from titles).
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
 media_folder: public/uploads
 public_folder: /uploads
 
@@ -81,6 +87,7 @@ collections:
           - { name: title, label: Title, widget: string }
           - { name: intro, label: Introduction, widget: text, required: false }
           - { name: image, label: Lab photo (optional), widget: image, required: false }
+          - { name: gallery, label: More photos (optional), label_singular: photo, widget: list, required: false, collapsed: false, hint: 'Click "Add photo" once per photo. Drag to reorder.', field: { name: image, label: Photo, widget: image } }
           - name: sections
             label: Sections
             widget: list
@@ -120,6 +127,7 @@ collections:
           - { label: Cell, value: cell }
           - { label: CRISPR scissors, value: scissors }
       - { name: image, label: Image (optional), widget: image, required: false }
+      - { name: gallery, label: More photos (optional), label_singular: photo, widget: list, required: false, collapsed: false, hint: 'Click "Add photo" once per photo. Drag to reorder.', field: { name: image, label: Photo, widget: image } }
       - { name: active, label: Show on the website, widget: boolean, default: true }
       - { name: body, label: Description, widget: markdown }
 
@@ -154,6 +162,7 @@ collections:
       - { name: position, label: Position, widget: string }
       - { name: order, label: Order within the group, widget: number, value_type: int, default: 9 }
       - { name: photo, label: Photo (portrait works best), widget: image, required: false }
+      - { name: gallery, label: More photos (optional), label_singular: photo, widget: list, required: false, collapsed: false, hint: 'Click "Add photo" once per photo. Drag to reorder.', field: { name: image, label: Photo, widget: image } }
       - { name: summary, label: Short summary (shown on the card), widget: text }
       - { name: body, label: Background, widget: markdown }
       - { name: description, label: About / personality, widget: markdown, required: false, buttons: [bold, italic, link], editor_components: [] }
@@ -193,11 +202,12 @@ collections:
     fields:
       - { name: title, label: Title, widget: string }
       - { name: date, label: Date, widget: datetime, date_format: 'DD MMM YYYY', time_format: false, format: 'YYYY-MM-DD' }
-      - { name: image, label: Cover image, widget: image, required: false }
-      - { name: summary, label: Short summary, widget: text }
+      - { name: image, label: Cover image (shown on the news list), widget: image, required: false }
+      - { name: gallery, label: More photos (optional), label_singular: photo, widget: list, required: false, collapsed: false, hint: 'Click "Add photo" once per photo. Drag to reorder.', field: { name: image, label: Photo, widget: image } }
+      - { name: summary, label: Short summary (optional), widget: text, required: false }
       - { name: tags, label: Tags, widget: list, required: false, hint: 'e.g. Paper, Award, Conference, New member' }
       - { name: draft, label: Draft (hidden from the site), widget: boolean, default: false }
-      - { name: body, label: Text, widget: markdown }
+      - { name: body, label: Text, widget: markdown, hint: 'You can also place a photo inside the text: click + then Image.' }
 
   # ------------------------------------------------------------ Publications
   - name: publications

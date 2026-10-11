@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
+import Gallery from '../../components/Gallery.astro';
 import { getPeople, GROUPS, md, initials } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -64,6 +65,7 @@ const display = `${p.title ? p.title + ' ' : ''}${p.name}`;
           </>
         )}
         {p.now_at && <p class="now"><strong>Now:</strong> {p.now_at}</p>}
+        <Gallery images={p.gallery} title="Photos" />
       </div>
     </div>
   </section>

@@ -3,6 +3,8 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const link = z.object({ label: z.string(), url: z.string() });
+// Extra photos added from the admin ("More photos" list).
+const gallery = z.array(z.string().nullish()).nullish();
 
 const settings = defineCollection({
   loader: glob({ pattern: '*.yml', base: './src/content/settings' }),
@@ -33,6 +35,7 @@ const pages = defineCollection({
     title: z.string(),
     intro: z.string().default(''),
     image: z.string().nullish(),
+    gallery,
     sections: z.array(z.object({ heading: z.string(), text: z.string() })).default([]),
   }),
 });
@@ -46,6 +49,7 @@ const research = defineCollection({
     summary: z.string().default(''),
     icon: z.enum(['dna', 'lungs', 'microscope', 'cell', 'scissors']).default('dna'),
     image: z.string().nullish(),
+    gallery,
     active: z.boolean().default(true),
   }),
 });
@@ -59,6 +63,7 @@ const people = defineCollection({
     position: z.string().default(''),
     order: z.number().default(99),
     photo: z.string().nullish(),
+    gallery,
     summary: z.string().default(''),
     description: z.string().nullish(),
     fun_fact: z.string().nullish(),
@@ -79,7 +84,8 @@ const news = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     image: z.string().nullish(),
-    summary: z.string().default(''),
+    gallery,
+    summary: z.string().nullish(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),

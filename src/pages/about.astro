@@ -3,6 +3,7 @@ import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
+import Gallery from '../components/Gallery.astro';
 import { md } from '../lib/site';
 
 const page = (await getEntry('pages', 'about'))!.data;
@@ -24,6 +25,7 @@ const icons = ['sparkle', 'calendar', 'users', 'dna'];
           </article>
         ))}
       </div>
+      <Gallery images={page.gallery} title="Life in the lab" />
     </div>
   </section>
   <section class="section section--tint">

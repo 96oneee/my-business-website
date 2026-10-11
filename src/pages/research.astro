@@ -3,6 +3,7 @@ import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
+import Gallery from '../components/Gallery.astro';
 import { getResearch } from '../lib/site';
 
 const intro = (await getEntry('pages', 'research-intro'))!.data;
@@ -36,6 +37,7 @@ const themes = await Promise.all(
           <div class="divider"><span></span></div>
           {t.data.question && <blockquote>{t.data.question}</blockquote>}
           <div class="prose"><Content /></div>
+          <Gallery images={t.data.gallery} />
         </div>
       </div>
     </section>

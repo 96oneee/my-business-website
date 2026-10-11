@@ -141,7 +141,7 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
         <div class="grid grid--3">
           {news.map((n) => (
             <a class="card news" href={`/news/${n.id}`}>
-              {n.data.image && <img src={n.data.image} alt="" loading="lazy" />}
+              {(n.data.image || n.data.gallery?.find(Boolean)) && <img src={n.data.image || n.data.gallery?.find(Boolean)!} alt="" loading="lazy" />}
               <div class="news-body">
                 <p class="date">{formatDate(n.data.date)}</p>
                 <h3>{n.data.title}</h3>

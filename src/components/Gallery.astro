@@ -1,0 +1,76 @@
+---
+/** Grid of extra photos added from the admin. Click a photo to see it full size. */
+interface Props {
+  images?: (string | null | undefined)[] | null;
+  title?: string;
+}
+const images = (Astro.props.images ?? []).filter((src): src is string => !!src);
+const { title } = Astro.props;
+---
+{images.length > 0 && (
+  <div class="gallery">
+    {title && <h2 class="gallery-title">{title}</h2>}
+    <div class:list={['gallery-grid', { single: images.length === 1 }]}>
+      {images.map((src, i) => (
+        <a href={src} class="gallery-item" data-gallery-item aria-label={`Open photo ${i + 1} of ${images.length}`}>
+          <img src={src} alt="" loading="lazy" />
+        </a>
+      ))}
+    </div>
+    <dialog class="gallery-viewer" data-gallery-viewer>
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <button type="button" class="nav prev" data-prev aria-label="Previous photo">‹</button>
+      <img alt="" />
+      <button type="button" class="nav next" data-next aria-label="Next photo">›</button>
+    </dialog>
+  </div>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('.gallery').forEach((gallery) => {
+    const links = [...gallery.querySelectorAll<HTMLAnchorElement>('[data-gallery-item]')];
+    const viewer = gallery.querySelector<HTMLDialogElement>('[data-gallery-viewer]');
+    const img = viewer?.querySelector('img');
+    if (!viewer || !img || typeof viewer.showModal !== 'function') return;
+    let current = 0;
+    const show = (i: number) => {
+      current = (i + links.length) % links.length;
+      img.src = links[current].href;
+    };
+    links.forEach((a, i) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        show(i);
+        viewer.showModal();
+      }),
+    );
+    viewer.querySelector('[data-close]')?.addEventListener('click', () => viewer.close());
+    viewer.querySelector('[data-prev]')?.addEventListener('click', () => show(current - 1));
+    viewer.querySelector('[data-next]')?.addEventListener('click', () => show(current + 1));
+    viewer.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+    viewer.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+    if (links.length < 2) viewer.querySelectorAll('.nav').forEach((b) => b.remove());
+  });
+</script>
+
+<style>
+  .gallery { margin: 36px 0 0; }
+  .gallery-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--slate); margin: 0 0 14px; font-weight: 500; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 12px; }
+  .gallery-grid.single { grid-template-columns: minmax(0, 1fr); }
+  .gallery-item { display: block; border-radius: 10px; overflow: hidden; background: var(--teal-light); }
+  .gallery-item img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; transition: transform 0.25s ease; }
+  .gallery-grid.single .gallery-item img { aspect-ratio: auto; }
+  .gallery-item:hover img { transform: scale(1.03); }
+  .gallery-viewer { padding: 0; border: 0; background: transparent; max-width: 96vw; max-height: 96vh; overflow: visible; }
+  .gallery-viewer::backdrop { background: rgba(10, 20, 40, 0.88); }
+  .gallery-viewer img { display: block; max-width: 92vw; max-height: 88vh; border-radius: 8px; }
+  .gallery-viewer button { position: fixed; border: 0; background: rgba(255, 255, 255, 0.14); color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 2rem; line-height: 1; cursor: pointer; }
+  .gallery-viewer button:hover { background: rgba(255, 255, 255, 0.28); }
+  .gallery-viewer .close { top: 16px; right: 16px; }
+  .gallery-viewer .prev { left: 16px; top: 50%; transform: translateY(-50%); }
+  .gallery-viewer .next { right: 16px; top: 50%; transform: translateY(-50%); }
+</style>
