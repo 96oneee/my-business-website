@@ -1,7 +1,10 @@
+# The public site is hosted on Vercel (see vercel.json). Netlify only provides the
+# admin login (Identity + Git Gateway), which Vercel reaches through /.netlify/*.
+# Netlify builds are skipped so they don't use the free plan's deploy credits.
 [build]
   command = "npm run build"
   publish = "dist"
-  ignore = "bash scripts/ignore-build.sh"
+  ignore = "exit 0"
 
 [build.environment]
   NODE_VERSION = "22"

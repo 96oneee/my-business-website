@@ -1,5 +1,5 @@
 # Decap CMS configuration for the NO.KIT.LAB website.
-# Every save commits to the repository and Netlify rebuilds the site (about a minute).
+# Every save commits to the repository and Vercel rebuilds the site (about a minute).
 backend:
   name: git-gateway
   branch: main
