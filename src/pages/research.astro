@@ -4,15 +4,16 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
 import Gallery from '../components/Gallery.astro';
-import { getResearch } from '../lib/site';
+import { getResearch, getSections } from '../lib/site';
 
+const { research: sec } = await getSections();
 const intro = (await getEntry('pages', 'research-intro'))!.data;
 const themes = await Promise.all(
   (await getResearch()).map(async (t) => ({ t, Content: (await render(t)).Content })),
 );
 ---
-<Base title="Research" description={intro.intro}>
-  <PageHero eyebrow="Research" title={intro.title} intro={intro.intro}>
+<Base title={sec.menu} description={intro.intro}>
+  <PageHero eyebrow={sec.menu} title={intro.title} intro={intro.intro}>
     <nav class="jump" aria-label="Research themes">
       {themes.map(({ t }, i) => <a href={`#${t.id}`}><span>0{i + 1}</span>{t.data.title}</a>)}
     </nav>

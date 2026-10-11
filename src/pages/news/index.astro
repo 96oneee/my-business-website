@@ -1,11 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
-import { getNews, formatDate } from '../../lib/site';
+import { getNews, getSections, formatDate } from '../../lib/site';
+const { news: sec } = await getSections();
 const news = await getNews();
 ---
-<Base title="News" description="News and updates from NO.KIT.LAB.">
-  <PageHero eyebrow="News" title="Lab news" intro="New papers, new members, conferences and milestones." />
+<Base title={sec.menu} description="News and updates from NO.KIT.LAB.">
+  <PageHero eyebrow={sec.menu} title={sec.heading} intro={sec.intro} />
   <section class="section">
     <div class="container">
       {news.length === 0 ? <p class="muted">No news yet. Check back soon.</p> : (

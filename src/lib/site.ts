@@ -7,6 +7,13 @@ export async function getSettings() {
   return entry.data;
 }
 
+/** Section names shown in the menu and page headings. */
+export async function getSections() {
+  const entry = await getEntry('sections', 'sections');
+  if (!entry) throw new Error('Missing src/content/settings/sections.yml');
+  return entry.data;
+}
+
 /** Render a short Markdown string from a front-matter field. */
 export function md(text?: string | null) {
   return text ? (marked.parse(text, { async: false }) as string) : '';

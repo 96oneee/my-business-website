@@ -4,13 +4,14 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Icon from '../components/Icon.astro';
 import Gallery from '../components/Gallery.astro';
-import { md } from '../lib/site';
+import { md, getSections } from '../lib/site';
 
 const page = (await getEntry('pages', 'about'))!.data;
+const { about: sec } = await getSections();
 const icons = ['sparkle', 'calendar', 'users', 'dna'];
 ---
-<Base title="About" description={page.intro}>
-  <PageHero eyebrow="About" title={page.title} intro={page.intro} />
+<Base title={sec.menu} description={page.intro}>
+  <PageHero eyebrow={sec.menu} title={page.title} intro={page.intro} />
   <section class="section">
     <div class="container">
       {page.image && <img class="about-img" src={page.image} alt="The NO.KIT.LAB team" />}
