@@ -4,10 +4,14 @@ import Icon from '../components/Icon.astro';
 import Divider from '../components/Divider.astro';
 import Helix from '../components/Helix.astro';
 import PubItem from '../components/PubItem.astro';
-import { getSettings, getResearch, getPeople, getNews, formatDate, initials } from '../lib/site';
+import { getEntry } from 'astro:content';
+import { getSettings, getSections, getResearch, getPeople, getNews, formatDate, initials } from '../lib/site';
 import { getPublications } from '../lib/publications';
 
 const s = await getSettings();
+// Section names and headings come from "Menu & section names", so a renamed section matches everywhere.
+const sec = await getSections();
+const researchTitle = (await getEntry('pages', 'research-intro'))?.data.title || sec.research.menu;
 const research = await getResearch();
 const team = (await getPeople()).filter((p) => p.data.group !== 'alumni');
 const news = (await getNews()).slice(0, 3);
@@ -46,11 +50,11 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
     <div class="container">
       <div class="section-head section-head--row">
         <div>
-          <p class="eyebrow">What we study</p>
-          <h2>Research themes</h2>
+          <p class="eyebrow">{sec.research.menu}</p>
+          <h2>{researchTitle}</h2>
           <Divider />
         </div>
-        <a class="text-link" href="/research">All research <Icon name="arrow" /></a>
+        <a class="text-link" href="/research">View all <Icon name="arrow" /></a>
       </div>
       <div class="grid grid--3">
         {research.map((r, i) => (
@@ -89,11 +93,11 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
     <div class="container">
       <div class="section-head section-head--row">
         <div>
-          <p class="eyebrow light">The people</p>
-          <h2>Meet the team</h2>
+          <p class="eyebrow light">{sec.people.menu}</p>
+          <h2>{sec.people.heading}</h2>
           <div class="divider light-div"><span></span></div>
         </div>
-        <a class="btn btn--light" href="/people">All members <Icon name="arrow" /></a>
+        <a class="btn btn--light" href="/people">View all <Icon name="arrow" /></a>
       </div>
       <ul class="faces">
         {team.map((p) => (
@@ -113,11 +117,11 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
     <div class="container">
       <div class="section-head section-head--row">
         <div>
-          <p class="eyebrow">Recent work</p>
-          <h2>Latest publications</h2>
+          <p class="eyebrow">{sec.publications.menu}</p>
+          <h2>{sec.publications.heading}</h2>
           <Divider />
         </div>
-        <a class="text-link" href="/publications">All publications <Icon name="arrow" /></a>
+        <a class="text-link" href="/publications">View all <Icon name="arrow" /></a>
       </div>
       {latest.length > 0 ? (
         <div class="pubs">{latest.map((p) => <PubItem pub={p} maxAuthors={8} />)}</div>
@@ -132,11 +136,11 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
       <div class="container">
         <div class="section-head section-head--row">
           <div>
-            <p class="eyebrow">News</p>
-            <h2>What's new in the lab</h2>
+            <p class="eyebrow">{sec.news.menu}</p>
+            <h2>{sec.news.heading}</h2>
             <Divider />
           </div>
-          <a class="text-link" href="/news">All news <Icon name="arrow" /></a>
+          <a class="text-link" href="/news">View all <Icon name="arrow" /></a>
         </div>
         <div class="grid grid--3">
           {news.map((n) => (
@@ -160,7 +164,7 @@ const latest = [...pubs.filter((p) => p.featured), ...pubs.filter((p) => !p.feat
         <h2>Interested in working with us?</h2>
         <p class="muted">We welcome motivated students and collaborators who want to turn genomic questions into experiments.</p>
       </div>
-      <a class="btn btn--primary" href="/contact">Get in touch <Icon name="arrow" /></a>
+      <a class="btn btn--primary" href="/contact">{sec.contact.heading} <Icon name="arrow" /></a>
     </div>
   </section>
 </Base>

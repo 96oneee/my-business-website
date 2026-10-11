@@ -3,13 +3,14 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Gallery from '../../components/Gallery.astro';
-import { getPeople, GROUPS, md, initials } from '../../lib/site';
+import { getPeople, getSections, GROUPS, md, initials } from '../../lib/site';
 
 export async function getStaticPaths() {
   const people = await getPeople();
   return people.map((person) => ({ params: { slug: person.id }, props: { person } }));
 }
 const { person } = Astro.props;
+const { people: sec } = await getSections();
 const p = person.data;
 const { Content } = await render(person);
 const groupLabel = GROUPS.find((g) => g.key === p.group)?.label ?? '';
@@ -18,7 +19,7 @@ const display = `${p.title ? p.title + ' ' : ''}${p.name}`;
 <Base title={p.name} description={p.summary || `${p.name}, ${p.position} at NO.KIT.LAB`} image={p.photo || undefined}>
   <section class="profile-hero">
     <div class="container">
-      <a class="back" href="/people"><Icon name="arrow-left" size={18} /> All people</a>
+      <a class="back" href="/people"><Icon name="arrow-left" size={18} /> Back to {sec.menu}</a>
     </div>
     <div class="container profile">
       <aside class="side">

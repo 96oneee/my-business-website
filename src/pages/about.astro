@@ -7,7 +7,8 @@ import Gallery from '../components/Gallery.astro';
 import { md, getSections } from '../lib/site';
 
 const page = (await getEntry('pages', 'about'))!.data;
-const { about: sec } = await getSections();
+const sections = await getSections();
+const sec = sections.about;
 const icons = ['sparkle', 'calendar', 'users', 'dna'];
 ---
 <Base title={sec.menu} description={page.intro}>
@@ -34,8 +35,8 @@ const icons = ['sparkle', 'calendar', 'users', 'dna'];
       <h2>Explore what we do</h2>
       <div class="divider center"><span></span></div>
       <div class="btn-row" style="justify-content:center">
-        <a class="btn btn--primary" href="/research">Our research <Icon name="arrow" /></a>
-        <a class="btn btn--ghost" href="/people">Meet the team</a>
+        <a class="btn btn--primary" href="/research">{sections.research.menu} <Icon name="arrow" /></a>
+        <a class="btn btn--ghost" href="/people">{sections.people.heading}</a>
       </div>
     </div>
   </section>

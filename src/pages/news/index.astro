@@ -5,7 +5,7 @@ import { getNews, getSections, formatDate } from '../../lib/site';
 const { news: sec } = await getSections();
 const news = await getNews();
 ---
-<Base title={sec.menu} description="News and updates from NO.KIT.LAB.">
+<Base title={sec.menu} description={sec.intro || "News and updates from NO.KIT.LAB."}>
   <PageHero eyebrow={sec.menu} title={sec.heading} intro={sec.intro} />
   <section class="section">
     <div class="container">
