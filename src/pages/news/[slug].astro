@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
+import Gallery from '../../components/Gallery.astro';
 import { getNews, formatDate } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -9,8 +10,12 @@ export async function getStaticPaths() {
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
+const photos = (post.data.gallery ?? []).filter((src): src is string => !!src);
+const cover = post.data.image || photos[0];
+// Without a cover image the first gallery photo is used as the cover.
+const extra = post.data.image ? photos : photos.slice(1);
 ---
-<Base title={post.data.title} description={post.data.summary} image={post.data.image || undefined}>
+<Base title={post.data.title} description={post.data.summary || undefined} image={cover || undefined}>
   <article class="section">
     <div class="container narrow">
       <a class="back" href="/news"><Icon name="arrow-left" size={18} /> All news</a>
@@ -18,8 +23,9 @@ const { Content } = await render(post);
       <h1>{post.data.title}</h1>
       <div class="divider"><span></span></div>
       {post.data.summary && <p class="lead">{post.data.summary}</p>}
-      {post.data.image && <img class="cover" src={post.data.image} alt="" />}
+      {cover && <img class="cover" src={cover} alt="" />}
       <div class="prose"><Content /></div>
+      <Gallery images={extra} />
     </div>
   </article>
 </Base>

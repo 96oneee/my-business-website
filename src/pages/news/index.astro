@@ -12,7 +12,7 @@ const news = await getNews();
         <div class="grid grid--3">
           {news.map((n) => (
             <a class="card item" href={`/news/${n.id}`}>
-              {n.data.image ? <img src={n.data.image} alt="" loading="lazy" /> : <div class="ph"><img src="/images/logo-mark.png" alt="" /></div>}
+              {(n.data.image || n.data.gallery?.find(Boolean)) ? <img src={n.data.image || n.data.gallery?.find(Boolean)!} alt="" loading="lazy" /> : <div class="ph"><img src="/images/logo-mark.png" alt="" /></div>}
               <div class="b">
                 <p class="date">{formatDate(n.data.date)}</p>
                 <h3>{n.data.title}</h3>
