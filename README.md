@@ -3,8 +3,8 @@
 Website of NO.KIT.LAB, the functional and translational genomics lab of Prof. Athar Khalil at the American University of Beirut.
 
 - **Site**: [Astro](https://astro.build) static site, no database.
-- **Admin**: [Decap CMS](https://decapcms.org) at `/admin`. Every save is a commit to this repository, and Netlify rebuilds the site in about a minute.
-- **Publications**: loaded from PubMed at every build (search set in *Site settings*). A weekly Netlify scheduled function (`netlify/functions/weekly-rebuild.mts`) triggers a rebuild so new papers appear on their own. Wrong matches can be hidden and extra papers added from the admin.
+- **Admin**: [Decap CMS](https://decapcms.org) at `/admin`. Every save is a commit to this repository, and Vercel rebuilds the site in about a minute.
+- **Publications**: loaded from PubMed at every build (search set in *Site settings*). A weekly GitHub Action (`.github/workflows/weekly-publications.yml`) saves the latest list and triggers a rebuild when it changes, so new papers appear on their own. Wrong matches can be hidden and extra papers added from the admin.
 
 ## Editing content (lab owner)
 
@@ -41,7 +41,13 @@ npx decap-server     # in a second terminal, then open http://localhost:4321/adm
 npm run build        # production build into dist/
 ```
 
-## Deploy on Netlify (one time)
+## Hosting
+
+- **Vercel** hosts the public site and builds every commit to `main` (settings in `vercel.json`).
+- **Netlify** (project `nokitlab`) only provides the admin login: Identity (invite-only) and Git Gateway. Vercel forwards `/.netlify/*` to `nokitlab.netlify.app`, so the admin at `nokitlab.com/admin` logs in as before. Netlify builds are skipped (`netlify.toml`) so the free plan's deploy credits aren't used.
+- Admin invites and password resets are emailed with a `nokitlab.netlify.app` link; after setting a password, editors use `nokitlab.com/admin`.
+
+## Original Netlify setup (one time, for the admin login)
 
 1. Netlify → *Add new site* → *Import from Git* → pick this repository. Build settings come from `netlify.toml`.
 2. *Site configuration → Identity* → enable Identity, set registration to **Invite only**, and under *Services* enable **Git Gateway**.

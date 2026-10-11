@@ -1,0 +1,31 @@
+name: Weekly publications refresh
+
+# Every Monday, save the latest PubMed list. If it changed, the commit
+# triggers a new build of the site so new papers appear on their own.
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/update-publications.mjs
+      - name: Commit if the list changed
+        run: |
+          if git diff --quiet; then
+            echo "No new papers."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Update publications from PubMed"
+          git push
