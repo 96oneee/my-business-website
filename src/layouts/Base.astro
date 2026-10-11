@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Icon from '../components/Icon.astro';
 import Wordmark from '../components/Wordmark.astro';
+import Intro from '../components/Intro.astro';
 import { getSettings, getSections, getHeader, getNews } from '../lib/site';
 
 interface Props { title?: string; description?: string; image?: string }
@@ -57,6 +58,7 @@ const ogImage = new URL(image, Astro.site);
     </script>
   </head>
   <body>
+    <Intro name={header.name} highlight={header.highlight} tagline={settings.tagline} />
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
       <div class="container bar">
