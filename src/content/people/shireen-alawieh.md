@@ -14,4 +14,4 @@ emails:
 links: []
 visible: true
 ---
-Medical Laboratory Science graduate and second-year MSc student, currently conducting translational research focused on identifying protein interactors of KMT2D to better understand the molecular mechanisms underlying Kabuki syndrome.
+Medical Laboratory Science graduate and second-year MSc student, currently conducting translational research focused on identifying protein interactors of KMT2D to better understand the molecular mechanisms underlying Kabuki syndrome. As a Mastercard Foundation Scholar, I bring an interdisciplinary perspective shaped by my background in public health and my commitment to advancing biomedical research. My international research experience in Iceland has further broadened my scientific outlook and fostered an appreciation for cross-cultural collaboration and global scientific exchange.
